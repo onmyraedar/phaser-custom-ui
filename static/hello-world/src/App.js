@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { invoke } from '@forge/bridge';
 
+import Game from "./Game";
+
 function App() {
   const [data, setData] = useState(null);
 
@@ -11,6 +13,7 @@ function App() {
   return (
     <div>
       {data ? data : 'Loading...'}
+      <Game />
     </div>
   );
 }
