@@ -1,6 +1,11 @@
 import Phaser from "phaser";
 import { useEffect } from "react";
-import bird from "./assets/bird-blue-sky-16x16.png";
+
+// Tileset images
+import dungeonTilesetImage from "./assets/tilesets/dungeon-tiles.png";
+
+// Maps
+import dungeonMap from "./assets/tilemaps/dungeon.json";
 
 function Game() {
 
@@ -9,28 +14,27 @@ function Game() {
 
     preload() {
       
-      this.load.image("background", bird)
+      // Loading tileset image and map
+      this.load.image("tileset", dungeonTilesetImage);
+      this.load.tilemapTiledJSON("map", dungeonMap);
 
     }
 
     create() {
+      
+      const map = this.make.tilemap({ key: "map" });
 
-      const { width, height } = this.sys.game.config;
+      // First parameter: the tileset name from the map's JSON file
+      // Second parameter: the key from preload()
+      const tileset = map.addTilesetImage("dungeon-tiles", "tileset");
 
-      // Creating a repeating background sprite
-      const bg = this.add.tileSprite(0, 0, width, height, "background");
-      bg.setOrigin(0, 0);
+      // First parameter: Layer name from Tiled
+      const belowLayer = map.createLayer("Below Player", tileset, 0, 0);
+      const worldLayer = map.createLayer("World", tileset, 0, 0);
 
-      this.add
-        .text(width/2, height/2, "Hello world \n It's Rae", {
-          font: "120px monospace",
-          color: "white",
-        })
-        .setOrigin(0.5, 0.5)
-        .setShadow(5, 5, "#5588EE", 0, true, true);
-
+      // Sets collision on the tiles within a layer
+      worldLayer.setCollisionByProperty({ collides: true });
     }
-    
   }
 
   // Configuration
