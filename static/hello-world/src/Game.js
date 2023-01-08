@@ -44,6 +44,12 @@ function Game() {
     width: 800,
     height: 600,
     scene: MainScene,
+    physics: {
+      default: "arcade",
+      arcade: {
+        gravity: { y: 0 },
+      },
+    },
     backgroundColor: "#FF7575",
   }
 
