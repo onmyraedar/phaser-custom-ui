@@ -2,10 +2,11 @@ import Phaser, { Input } from "phaser";
 import { useEffect } from "react";
 
 // Tileset images
-import dungeonTilesetImage from "./assets/tilesets/dungeon-tiles.png";
+import floorTilesetImg from "./assets/tilesets/TilesetFloor.png";
+import natureTilesetImg from "./assets/tilesets/TilesetNature.png";
 
 // Maps
-import dungeonMap from "./assets/tilemaps/dungeon.json";
+import dungeonTest1Map from "./assets/tilemaps/dungeon-test-01.json";
 
 // Atlases
 import misaAtlasJSON from "./assets/atlases/misa-atlas.json";
@@ -21,9 +22,10 @@ function Game() {
 
     preload() {
       
-      // Loading tileset image and map
-      this.load.image("tileset", dungeonTilesetImage);
-      this.load.tilemapTiledJSON("map", dungeonMap);
+      // Loading tileset images and map
+      this.load.image("floor-tileset", floorTilesetImg);
+      this.load.image("nature-tileset", natureTilesetImg);
+      this.load.tilemapTiledJSON("dungeon-test-1-map", dungeonTest1Map);
 
       // Loading the texture atlas for the player's sprite
       // First parameter: PNG, second parameter: JSON
@@ -33,15 +35,16 @@ function Game() {
 
     create() {
       
-      const map = this.make.tilemap({ key: "map" });
+      const map = this.make.tilemap({ key: "dungeon-test-1-map" });
 
       // First parameter: the tileset name from the map's JSON file
       // Second parameter: the key from preload()
-      const tileset = map.addTilesetImage("dungeon-tiles", "tileset");
+      const floorTileset = map.addTilesetImage("TilesetFloor", "floor-tileset");
+      const natureTileset = map.addTilesetImage("TilesetNature", "nature-tileset");
 
       // First parameter: Layer name from Tiled
-      const belowLayer = map.createLayer("Below Player", tileset, 0, 0);
-      const worldLayer = map.createLayer("World", tileset, 0, 0);
+      const belowLayer = map.createLayer("Below Player", floorTileset, 0, 0);
+      const worldLayer = map.createLayer("World", natureTileset, 0, 0);
 
       // Sets collision on the tiles within a layer
       worldLayer.setCollisionByProperty({ collides: true });
@@ -60,7 +63,7 @@ function Game() {
       const camera = this.cameras.main;
       camera.startFollow(this.player);
       camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-      camera.setZoom(3);
+      camera.setZoom(2);
 
       // Keys
       this.cursors = this.input.keyboard.createCursorKeys();
