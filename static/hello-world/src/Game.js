@@ -9,8 +9,8 @@ import natureTilesetImg from "./assets/tilesets/TilesetNature.png";
 import dungeonTest1Map from "./assets/tilemaps/dungeon-test-01.json";
 
 // Atlases
-import misaAtlasJSON from "./assets/atlases/misa-atlas.json";
-import misaAtlasPNG from "./assets/atlases/misa-atlas.png";
+import ninjaAtlasJson from "./assets/atlases/ninja-atlas.json";
+import ninjaAtlasPng from "./assets/atlases/ninja-atlas.png";
 
 function Game() {
 
@@ -29,7 +29,7 @@ function Game() {
 
       // Loading the texture atlas for the player's sprite
       // First parameter: PNG, second parameter: JSON
-      this.load.atlas("player-atlas", misaAtlasPNG, misaAtlasJSON);
+      this.load.atlas("player-atlas", ninjaAtlasPng, ninjaAtlasJson);
 
     }
 
@@ -52,9 +52,7 @@ function Game() {
       // We haven't defined a spawn point as a Tiled object. For now, we'll 
       // set the player's spawn point using manual coordinates
       this.player = this.physics.add
-        .sprite(80, 80, "player-atlas", "misa-front")
-        .setSize(30, 40)
-        .setOffset(0, 25);
+        .sprite(120, 120, "player-atlas", "ninja-idle-front");
 
       // Sets the collision between the player and the dungeon walls
       this.physics.add.collider(this.player, worldLayer);
@@ -105,6 +103,7 @@ function Game() {
     width: 800,
     height: 600,
     scene: MainScene,
+    pixelArt: true,
     physics: {
       default: "arcade",
       arcade: {
