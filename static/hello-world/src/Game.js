@@ -72,24 +72,112 @@ function Game() {
         down: Input.Keyboard.KeyCodes.S,
       });
 
+      // Creates the player's movement animations
+      const anims = this.anims;
+
+      anims.create({
+        key: "player-walk-front",
+        frames: anims.generateFrameNames("player-atlas", {
+          prefix: "ninja-walk-front.",
+          start: 0,
+          end: 3,
+          zeroPad: 3,
+        }),
+        frameRate: 7,
+        repeat: -1,   // -1 repeats the animation infinitely many times
+      });
+
+      anims.create({
+        key: "player-walk-back",
+        frames: anims.generateFrameNames("player-atlas", {
+          prefix: "ninja-walk-back.",
+          start: 0,
+          end: 3,
+          zeroPad: 3,
+        }),
+        frameRate: 7,
+        repeat: -1,
+      });    
+
+      anims.create({
+        key: "player-walk-left",
+        frames: anims.generateFrameNames("player-atlas", {
+          prefix: "ninja-walk-left.",
+          start: 0,
+          end: 3,
+          zeroPad: 3,
+        }),
+        frameRate: 7,
+        repeat: -1,
+      });  
+
+      anims.create({
+        key: "player-walk-right",
+        frames: anims.generateFrameNames("player-atlas", {
+          prefix: "ninja-walk-right.",
+          start: 0,
+          end: 3,
+          zeroPad: 3,
+        }),
+        frameRate: 7,
+        repeat: -1,
+      });  
+
     }
 
     update() {
 
       const speed = 200;
+      const previousVelocity = this.player.body.velocity.clone();
 
       // Stop previous movement from the last frame
+      // Sets velocity to zero in both the X and Y directions
       this.player.body.setVelocity(0);
 
-      // Player movement
+      // Horizontal movement
       if (this.cursors.left.isDown || this.wasd.left.isDown) {
         this.player.body.setVelocityX(-speed);
       } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
         this.player.body.setVelocityX(speed);
-      } else if (this.cursors.up.isDown || this.wasd.up.isDown) {
+      }
+
+      // Vertical movement
+      if (this.cursors.up.isDown || this.wasd.up.isDown) {
         this.player.body.setVelocityY(-speed);
       } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
         this.player.body.setVelocityY(speed);
+      }
+
+      // Normalize and scale the velocity
+      // This prevents the player from moving faster along a diagonal
+      this.player.body.velocity.normalize().scale(speed);
+
+      // Update player movement animations
+      // Horizontal animations have preference over vertical animations
+      if (this.cursors.left.isDown) {
+        this.player.anims.play("player-walk-left", true);
+      } else if (this.cursors.right.isDown) {
+        this.player.anims.play("player-walk-right", true);
+      } else if (this.cursors.up.isDown) {
+        this.player.anims.play("player-walk-back", true);
+      } else if (this.cursors.down.isDown) {
+        this.player.anims.play("player-walk-front", true);
+      } else {
+
+        // If no movement key is pressed, stop the animation
+        this.player.anims.stop();
+
+        // Set idle frame based on previous movement
+        if (previousVelocity.x < 0) {
+          this.player.setTexture("player-atlas", "ninja-idle-left"); 
+        } else if (previousVelocity.x > 0) {
+          this.player.setTexture("player-atlas", "ninja-idle-right");
+        } else if (previousVelocity.y < 0) {
+          this.player.setTexture("player-atlas", "ninja-idle-back");
+        } else if (previousVelocity.y > 0) {
+          this.player.setTexture("player-atlas", "ninja-idle-front");
+        }
+
       }
 
     }
