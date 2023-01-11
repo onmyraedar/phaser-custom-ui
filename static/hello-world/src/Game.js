@@ -23,14 +23,19 @@ import plantSpikeAtlasPng from "./assets/projectiles/plant-spike-atlas.png";
 import rootAtlasJson from "./assets/status-effects/root-atlas.json";
 import rootAtlasPng from "./assets/status-effects/root-atlas.png";
 
+// HUD container
+import HUDScene from "./HUDScene";
 
 function Game() {
 
   // Scene
   class MainScene extends Phaser.Scene {
 
-    cursors = {};
-    wasd = {};
+    constructor() {
+      super("MainScene");
+      this.cursors = {};
+      this.wasd = {};
+    }
 
     preload() {
       
@@ -344,7 +349,7 @@ function Game() {
     parent: "game-container",
     width: 800,
     height: 600,
-    scene: MainScene,
+    scene: [ MainScene, HUDScene ],
     pixelArt: true,
     physics: {
       default: "arcade",
