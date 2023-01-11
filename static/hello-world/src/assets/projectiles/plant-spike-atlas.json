@@ -1,0 +1,104 @@
+{
+	"textures": [
+		{
+			"image": "plant-spike-atlas.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 26,
+				"h": 78
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "plant-spike.000",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 24,
+						"h": 20
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 24,
+						"h": 20
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 24,
+						"h": 20
+					}
+				},
+				{
+					"filename": "plant-spike.003",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 24,
+						"h": 20
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 4,
+						"w": 24,
+						"h": 13
+					},
+					"frame": {
+						"x": 1,
+						"y": 23,
+						"w": 24,
+						"h": 13
+					}
+				},
+				{
+					"filename": "plant-spike.002",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 24,
+						"h": 20
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 0,
+						"w": 22,
+						"h": 17
+					},
+					"frame": {
+						"x": 1,
+						"y": 38,
+						"w": 22,
+						"h": 17
+					}
+				},
+				{
+					"filename": "plant-spike.001",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 24,
+						"h": 20
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 0,
+						"w": 20,
+						"h": 20
+					},
+					"frame": {
+						"x": 1,
+						"y": 57,
+						"w": 20,
+						"h": 20
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:5ed1be363e27cf72d30174c086df1795:38dd642087e1643d40ae59d196be7a63:f3917c8b1b497006defebb3b2d8da108$"
+	}
+}

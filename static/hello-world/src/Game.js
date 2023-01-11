@@ -12,11 +12,13 @@ import dungeonTest1Map from "./assets/tilemaps/dungeon-test-01.json";
 import ninjaAtlasJson from "./assets/atlases/ninja-atlas.json";
 import ninjaAtlasPng from "./assets/atlases/ninja-atlas.png";
 
-
 // Projectiles
 import ProjectileGroup, { Projectile } from "./ProjectileGroup";
 import shurikenAtlasJson from "./assets/projectiles/shuriken-atlas.json";
 import shurikenAtlasPng from "./assets/projectiles/shuriken-atlas.png";
+import plantSpikeAtlasJson from "./assets/projectiles/plant-spike-atlas.json";
+import plantSpikeAtlasPng from "./assets/projectiles/plant-spike-atlas.png";
+
 
 function Game() {
 
@@ -37,9 +39,9 @@ function Game() {
       // First parameter: PNG, second parameter: JSON
       this.load.atlas("player-atlas", ninjaAtlasPng, ninjaAtlasJson);
 
-      // Loading the shuriken texture atlas
+      // Loading the projectile texture atlases
       this.load.atlas("shuriken-atlas", shurikenAtlasPng, shurikenAtlasJson);
-
+      this.load.atlas("plant-spike-atlas", plantSpikeAtlasPng, plantSpikeAtlasJson);
     }
 
     create() {
@@ -144,8 +146,9 @@ function Game() {
       this.enemies = this.add.group();
       this.enemies.add(this.enemy);
 
-      // Projectile; final parameter is the wielder
+      // Projectile groups
       this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000");
+      this.plantSpikes = new ProjectileGroup(this, "plant-spike-atlas", "plant-spike.002");
 
       // Each shuriken should disappear after colliding with the world
       this.physics.add.collider(this.shurikens, worldLayer, (obj1, obj2) => {
@@ -167,9 +170,12 @@ function Game() {
 
       })
       
-      // Adds the space key
+      // Adds the ability keys
       this.spaceKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.SPACE
+      );
+      this.oneKey = this.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes.ONE
       );
 
     }
@@ -237,6 +243,11 @@ function Game() {
       // Pressing the space key throws a shuriken
       if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
         this.shurikens.fireProjectile(this.player.x, this.player.y,
+          this.player);
+      }
+      // Pressing the 1 key fires the root ability
+      if (Phaser.Input.Keyboard.JustDown(this.oneKey)) {
+        this.plantSpikes.fireProjectile(this.player.x, this.player.y, 
           this.player);
       }
 

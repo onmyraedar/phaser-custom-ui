@@ -77,7 +77,11 @@ export default class ProjectileGroup extends Phaser.Physics.Arcade.Group {
       visible: false,
       key: projectileTexture,   // texture key of each new Game Object
       frame: projectileFrame,   // texture frame of each new Game Object
-    })
+    });
+
+    this.getChildren().forEach((projectile) => {
+      projectile.setTexture(projectileTexture, projectileFrame);
+    }, this);
 
   }
 
