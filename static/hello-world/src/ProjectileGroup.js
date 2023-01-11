@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-class Projectile extends Phaser.Physics.Arcade.Sprite {
+export class Projectile extends Phaser.Physics.Arcade.Sprite {
 
   constructor(scene, x, y) {
     super(scene, x, y, "shuriken-atlas", "shuriken.000");
@@ -92,4 +92,3 @@ export default class ProjectileGroup extends Phaser.Physics.Arcade.Group {
   }
 
 }
-

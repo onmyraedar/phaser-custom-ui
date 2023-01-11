@@ -14,7 +14,7 @@ import ninjaAtlasPng from "./assets/atlases/ninja-atlas.png";
 
 
 // Projectiles
-import ProjectileGroup from "./ProjectileGroup";
+import ProjectileGroup, { Projectile } from "./ProjectileGroup";
 import shurikenAtlasJson from "./assets/projectiles/shuriken-atlas.json";
 import shurikenAtlasPng from "./assets/projectiles/shuriken-atlas.png";
 
@@ -137,7 +137,12 @@ function Game() {
 
       // Temporary test enemy
       this.enemy = this.physics.add
-        .sprite(200, 200, "player-atlas", "ninja-idle-front");
+        .sprite(200, 200, "player-atlas", "ninja-idle-front")
+        .setImmovable(true);
+
+      // Adds test enemy to the group of enemies
+      this.enemies = this.add.group();
+      this.enemies.add(this.enemy);
 
       // Projectile; final parameter is the wielder
       this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000");
@@ -145,10 +150,21 @@ function Game() {
       // Each shuriken should disappear after colliding with the world
       this.physics.add.collider(this.shurikens, worldLayer, (obj1, obj2) => {
 
-        // The shuriken is the collision object that is not the world layer
-        const shuriken = [obj1, obj2].find((obj) => obj !== worldLayer);
+        // The shuriken is the Projectile object involved in the collision
+        const shuriken = [obj1, obj2].find((obj) => obj instanceof Projectile);
         shuriken.setActive(false);
-        shuriken.setVisible(false);      
+        shuriken.setVisible(false);    
+
+      })
+
+      // Shuriken collision with enemies
+      this.physics.add.collider(this.shurikens, this.enemies, (obj1, obj2) => {
+
+        // The shuriken is the Projectile object involved in the collision
+        const shuriken = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        shuriken.setActive(false);
+        shuriken.setVisible(false);  
+
       })
       
       // Adds the space key
