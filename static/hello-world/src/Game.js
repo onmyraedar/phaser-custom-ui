@@ -19,6 +19,10 @@ import shurikenAtlasPng from "./assets/projectiles/shuriken-atlas.png";
 import plantSpikeAtlasJson from "./assets/projectiles/plant-spike-atlas.json";
 import plantSpikeAtlasPng from "./assets/projectiles/plant-spike-atlas.png";
 
+// Status effects
+import rootAtlasJson from "./assets/status-effects/root-atlas.json";
+import rootAtlasPng from "./assets/status-effects/root-atlas.png";
+
 
 function Game() {
 
@@ -42,6 +46,9 @@ function Game() {
       // Loading the projectile texture atlases
       this.load.atlas("shuriken-atlas", shurikenAtlasPng, shurikenAtlasJson);
       this.load.atlas("plant-spike-atlas", plantSpikeAtlasPng, plantSpikeAtlasJson);
+
+      // Loading the status effect atlases
+      this.load.atlas("root-atlas", rootAtlasPng, rootAtlasJson);
     }
 
     create() {
@@ -67,6 +74,13 @@ function Game() {
 
       // Add the player's last idle direction
       this.player.lastIdleDirection = "front";
+
+      // Sets the player's ability cooldowns
+      this.player.ability = {
+        plant: {
+          isOnCooldown: false,
+        },
+      };
 
       // Sets the collision between the player and the dungeon walls
       this.physics.add.collider(this.player, worldLayer);
@@ -137,10 +151,30 @@ function Game() {
         repeat: -1,
       });  
 
+      // Root animation
+      anims.create({
+        key: "enemy-root",
+        frames: anims.generateFrameNames("root-atlas", {
+          prefix: "root.",
+          start: 0,
+          end: 7,
+          zeroPad: 3,          
+        }),
+        frameRate: 15,
+        repeat: -1,
+      });
+
       // Temporary test enemy
       this.enemy = this.physics.add
         .sprite(200, 200, "player-atlas", "ninja-idle-front")
         .setImmovable(true);
+      this.enemy.isRooted = false;
+
+      // Adds hidden status effect for enemy
+      this.enemy.rootAnim = this.physics.add
+        .sprite(this.enemy.x, this.enemy.y, "root-atlas", "root.000")
+        .setActive(false)
+        .setVisible(false);
 
       // Adds test enemy to the group of enemies
       this.enemies = this.add.group();
@@ -169,6 +203,44 @@ function Game() {
         shuriken.setVisible(false);  
 
       })
+
+      // Each plant spike should disappear after colliding with the world
+      this.physics.add.collider(this.plantSpikes, worldLayer, (obj1, obj2) => {
+
+        const plantSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        plantSpike.setActive(false);
+        plantSpike.setVisible(false);
+
+      })
+
+      // Plant spike collision with enemies
+      this.physics.add.collider(this.plantSpikes, this.enemies, (obj1, obj2) => {
+
+        const plantSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        plantSpike.setActive(false);
+        plantSpike.setVisible(false);  
+
+        const enemy = [obj1, obj2].find((obj) => obj !== plantSpike)
+
+        // Root the enemy
+        enemy.isRooted = true;
+        enemy.rootAnim.setActive(true).setVisible(true);
+
+        // The root lasts for 2 seconds
+        this.time.delayedCall(2000, () => {
+          enemy.isRooted = false;
+          enemy.rootAnim.setActive(false).setVisible(false);
+        })
+
+        // The player's plant ability is now on cooldown
+        this.player.ability.plant.isOnCooldown = true;
+
+        // The player's ability cooldown lasts for 3 seconds
+        this.time.delayedCall(3000, () => {
+          this.player.ability.plant.isOnCooldown = false;
+        })
+
+      })      
       
       // Adds the ability keys
       this.spaceKey = this.input.keyboard.addKey(
@@ -177,6 +249,8 @@ function Game() {
       this.oneKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.ONE
       );
+
+      
 
     }
 
@@ -240,6 +314,11 @@ function Game() {
 
       }
 
+      // Plays an animation to reflect enemy root
+      if (this.enemy.isRooted) {
+        this.enemy.rootAnim.anims.play("enemy-root", true);
+      }
+
       // Pressing the space key throws a shuriken
       if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
         this.shurikens.fireProjectile(this.player.x, this.player.y,
@@ -247,8 +326,12 @@ function Game() {
       }
       // Pressing the 1 key fires the root ability
       if (Phaser.Input.Keyboard.JustDown(this.oneKey)) {
-        this.plantSpikes.fireProjectile(this.player.x, this.player.y, 
-          this.player);
+
+        if (!this.player.ability.plant.isOnCooldown) {
+          this.plantSpikes.fireProjectile(this.player.x, this.player.y, 
+            this.player);
+        }
+
       }
 
     }
