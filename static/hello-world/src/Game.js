@@ -12,6 +12,12 @@ import dungeonTest1Map from "./assets/tilemaps/dungeon-test-01.json";
 import ninjaAtlasJson from "./assets/atlases/ninja-atlas.json";
 import ninjaAtlasPng from "./assets/atlases/ninja-atlas.png";
 
+
+// Projectiles
+import ProjectileGroup from "./ProjectileGroup";
+import shurikenAtlasJson from "./assets/projectiles/shuriken-atlas.json";
+import shurikenAtlasPng from "./assets/projectiles/shuriken-atlas.png";
+
 function Game() {
 
   // Scene
@@ -30,6 +36,9 @@ function Game() {
       // Loading the texture atlas for the player's sprite
       // First parameter: PNG, second parameter: JSON
       this.load.atlas("player-atlas", ninjaAtlasPng, ninjaAtlasJson);
+
+      // Loading the shuriken texture atlas
+      this.load.atlas("shuriken-atlas", shurikenAtlasPng, shurikenAtlasJson);
 
     }
 
@@ -53,6 +62,9 @@ function Game() {
       // set the player's spawn point using manual coordinates
       this.player = this.physics.add
         .sprite(120, 120, "player-atlas", "ninja-idle-front");
+
+      // Add the player's last idle direction
+      this.player.lastIdleDirection = "front";
 
       // Sets the collision between the player and the dungeon walls
       this.physics.add.collider(this.player, worldLayer);
@@ -123,11 +135,32 @@ function Game() {
         repeat: -1,
       });  
 
+      // Temporary test enemy
+      this.enemy = this.physics.add
+        .sprite(200, 200, "player-atlas", "ninja-idle-front");
+
+      // Projectile; final parameter is the wielder
+      this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000");
+
+      // Each shuriken should disappear after colliding with the world
+      this.physics.add.collider(this.shurikens, worldLayer, (obj1, obj2) => {
+
+        // The shuriken is the collision object that is not the world layer
+        const shuriken = [obj1, obj2].find((obj) => obj !== worldLayer);
+        shuriken.setActive(false);
+        shuriken.setVisible(false);      
+      })
+      
+      // Adds the space key
+      this.spaceKey = this.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes.SPACE
+      );
+
     }
 
     update() {
 
-      const speed = 200;
+      const speed = 100;
       const previousVelocity = this.player.body.velocity.clone();
 
       // Stop previous movement from the last frame
@@ -168,16 +201,27 @@ function Game() {
         this.player.anims.stop();
 
         // Set idle frame based on previous movement
+        // Update the player's last idle direction
         if (previousVelocity.x < 0) {
-          this.player.setTexture("player-atlas", "ninja-idle-left"); 
+          this.player.setTexture("player-atlas", "ninja-idle-left");
+          this.player.lastIdleDirection = "left"; 
         } else if (previousVelocity.x > 0) {
           this.player.setTexture("player-atlas", "ninja-idle-right");
+          this.player.lastIdleDirection = "right"; 
         } else if (previousVelocity.y < 0) {
           this.player.setTexture("player-atlas", "ninja-idle-back");
+          this.player.lastIdleDirection = "back";
         } else if (previousVelocity.y > 0) {
           this.player.setTexture("player-atlas", "ninja-idle-front");
+          this.player.lastIdleDirection = "front";
         }
 
+      }
+
+      // Pressing the space key throws a shuriken
+      if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+        this.shurikens.fireProjectile(this.player.x, this.player.y,
+          this.player);
       }
 
     }

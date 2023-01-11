@@ -1,0 +1,62 @@
+{
+	"textures": [
+		{
+			"image": "shuriken-atlas.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 35,
+				"h": 17
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "shuriken.001",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 1,
+						"w": 16,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 16,
+						"h": 15
+					}
+				},
+				{
+					"filename": "shuriken.000",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 1,
+						"w": 15,
+						"h": 15
+					},
+					"frame": {
+						"x": 19,
+						"y": 1,
+						"w": 15,
+						"h": 15
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:c3fdbdac72784267efd830dbb4519d83:0f4662583cec63fdb1cb6406a5b9bc71:2c1a30239ed995bc8cb46b09472560c6$"
+	}
+}
