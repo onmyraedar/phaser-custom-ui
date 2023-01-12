@@ -216,6 +216,10 @@ function Game() {
       // Projectile groups
       this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000");
       this.plantSpikes = new ProjectileGroup(this, "plant-spike-atlas", "plant-spike.002");
+      this.rocks = new ProjectileGroup(this, "rock-atlas", "rock.000");
+      this.lightningBolts = new ProjectileGroup(this, "lightning-atlas", "lightning.003");
+      this.iceSpikes = new ProjectileGroup(this, "ice-spike-atlas", "ice-spike.007");
+      this.fireballs = new ProjectileGroup(this, "fireball-atlas", "fireball.001");
 
       // Each shuriken should disappear after colliding with the world
       this.physics.add.collider(this.shurikens, worldLayer, (obj1, obj2) => {
@@ -268,12 +272,15 @@ function Game() {
       })      
       
       // Adds the ability keys
-      this.spaceKey = this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.SPACE
-      );
-      this.oneKey = this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.ONE
-      );
+      this.keys = this.input.keyboard.addKeys({
+        space: Phaser.Input.Keyboard.KeyCodes.SPACE,
+        one: Phaser.Input.Keyboard.KeyCodes.ONE,
+        two: Phaser.Input.Keyboard.KeyCodes.TWO,
+        three: Phaser.Input.Keyboard.KeyCodes.THREE,
+        four: Phaser.Input.Keyboard.KeyCodes.FOUR,
+        five: Phaser.Input.Keyboard.KeyCodes.FIVE,
+        z: Phaser.Input.Keyboard.KeyCodes.Z,
+      });
 
     }
 
@@ -343,12 +350,12 @@ function Game() {
       }
 
       // Pressing the space key throws a shuriken
-      if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+      if (Phaser.Input.Keyboard.JustDown(this.keys.space)) {
         this.shurikens.fireProjectile(this.player.x, this.player.y,
           this.player);
       }
       // Pressing the 1 key fires the root ability
-      if (Phaser.Input.Keyboard.JustDown(this.oneKey)) {
+      if (Phaser.Input.Keyboard.JustDown(this.keys.one)) {
 
         if (!this.player.ability.plant.isOnCooldown) {
           this.plantSpikes.fireProjectile(this.player.x, this.player.y, 
@@ -364,6 +371,22 @@ function Game() {
           })
         }
 
+      }
+      if (Phaser.Input.Keyboard.JustDown(this.keys.two)) {
+        this.rocks.fireProjectile(this.player.x, this.player.y,
+          this.player);
+      }
+      if (Phaser.Input.Keyboard.JustDown(this.keys.three)) {
+        this.lightningBolts.fireProjectile(this.player.x, this.player.y,
+          this.player);
+      }
+      if (Phaser.Input.Keyboard.JustDown(this.keys.four)) {
+        this.iceSpikes.fireProjectile(this.player.x, this.player.y,
+          this.player);
+      }
+      if (Phaser.Input.Keyboard.JustDown(this.keys.five)) {
+        this.fireballs.fireProjectile(this.player.x, this.player.y,
+          this.player);
       }
 
       // Update the HUD with player details
