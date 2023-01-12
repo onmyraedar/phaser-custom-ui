@@ -238,15 +238,6 @@ function Game() {
           enemy.rootAnim.setActive(false).setVisible(false);
         })
 
-        // The player's plant ability is now on cooldown
-        this.player.ability.plant.isOnCooldown = true;
-
-        // The player's ability cooldown lasts for 3 seconds
-        this.player.ability.plant.cooldownTimer = this.time.delayedCall(
-          3000, () => {
-          this.player.ability.plant.isOnCooldown = false;
-        })
-
       })      
       
       // Adds the ability keys
@@ -256,8 +247,6 @@ function Game() {
       this.oneKey = this.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes.ONE
       );
-
-      
 
     }
 
@@ -337,6 +326,15 @@ function Game() {
         if (!this.player.ability.plant.isOnCooldown) {
           this.plantSpikes.fireProjectile(this.player.x, this.player.y, 
             this.player);
+
+          // The player's plant ability is now on cooldown
+          this.player.ability.plant.isOnCooldown = true;
+
+          // The player's ability cooldown lasts for 3 seconds
+          this.player.ability.plant.cooldownTimer = this.time.delayedCall(
+            3000, () => {
+            this.player.ability.plant.isOnCooldown = false;
+          })
         }
 
       }
