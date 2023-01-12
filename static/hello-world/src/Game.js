@@ -84,6 +84,7 @@ function Game() {
       this.player.ability = {
         plant: {
           isOnCooldown: false,
+          cooldownTimer: null,
         },
       };
 
@@ -241,7 +242,8 @@ function Game() {
         this.player.ability.plant.isOnCooldown = true;
 
         // The player's ability cooldown lasts for 3 seconds
-        this.time.delayedCall(3000, () => {
+        this.player.ability.plant.cooldownTimer = this.time.delayedCall(
+          3000, () => {
           this.player.ability.plant.isOnCooldown = false;
         })
 
@@ -339,6 +341,8 @@ function Game() {
 
       }
 
+      // Update the HUD with player details
+      this.events.emit("update-hud", this.player);
     }
 
   }
