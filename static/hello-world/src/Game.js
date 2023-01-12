@@ -18,10 +18,28 @@ import shurikenAtlasJson from "./assets/projectiles/shuriken-atlas.json";
 import shurikenAtlasPng from "./assets/projectiles/shuriken-atlas.png";
 import plantSpikeAtlasJson from "./assets/projectiles/plant-spike-atlas.json";
 import plantSpikeAtlasPng from "./assets/projectiles/plant-spike-atlas.png";
+import rockAtlasJson from "./assets/projectiles/rock-atlas.json";
+import rockAtlasPng from "./assets/projectiles/rock-atlas.png";
+import lightningAtlasJson from "./assets/projectiles/lightning-atlas.json";
+import lightningAtlasPng from "./assets/projectiles/lightning-atlas.png";
+import iceSpikeAtlasJson from "./assets/projectiles/ice-spike-atlas.json";
+import iceSpikeAtlasPng from "./assets/projectiles/ice-spike-atlas.png";
+import fireballAtlasJson from "./assets/projectiles/fireball-atlas.json";
+import fireballAtlasPng from "./assets/projectiles/fireball-atlas.png";
 
 // Status effects
 import rootAtlasJson from "./assets/status-effects/root-atlas.json";
 import rootAtlasPng from "./assets/status-effects/root-atlas.png";
+import knockbackAtlasJson from "./assets/status-effects/knockback-atlas.json";
+import knockbackAtlasPng from "./assets/status-effects/knockback-atlas.png";
+import stunAtlasJson from "./assets/status-effects/stun-atlas.json";
+import stunAtlasPng from "./assets/status-effects/stun-atlas.png";
+import slowAtlasJson from "./assets/status-effects/slow-atlas.json";
+import slowAtlasPng from "./assets/status-effects/slow-atlas.png";
+import flameAtlasJson from "./assets/status-effects/flame-atlas.json";
+import flameAtlasPng from "./assets/status-effects/flame-atlas.png";
+import healAtlasJson from "./assets/status-effects/heal-atlas.json";
+import healAtlasPng from "./assets/status-effects/heal-atlas.png";
 
 // HUD container
 import HUDScene from "./HUDScene";
@@ -51,9 +69,18 @@ function Game() {
       // Loading the projectile texture atlases
       this.load.atlas("shuriken-atlas", shurikenAtlasPng, shurikenAtlasJson);
       this.load.atlas("plant-spike-atlas", plantSpikeAtlasPng, plantSpikeAtlasJson);
+      this.load.atlas("rock-atlas", rockAtlasPng, rockAtlasJson);
+      this.load.atlas("lightning-atlas", lightningAtlasPng, lightningAtlasJson);
+      this.load.atlas("ice-spike-atlas", iceSpikeAtlasPng, iceSpikeAtlasJson);
+      this.load.atlas("fireball-atlas", fireballAtlasPng, fireballAtlasJson);
 
       // Loading the status effect atlases
       this.load.atlas("root-atlas", rootAtlasPng, rootAtlasJson);
+      this.load.atlas("knockback-atlas", knockbackAtlasPng, knockbackAtlasJson);
+      this.load.atlas("stun-atlas", stunAtlasPng, stunAtlasJson);
+      this.load.atlas("slow-atlas", slowAtlasPng, slowAtlasJson);
+      this.load.atlas("flame-atlas", flameAtlasPng, flameAtlasJson);
+      this.load.atlas("heal-atlas", healAtlasPng, healAtlasJson);
     }
 
     create() {

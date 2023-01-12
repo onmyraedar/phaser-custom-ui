@@ -1,0 +1,125 @@
+{
+	"textures": [
+		{
+			"image": "flame-atlas.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 85,
+				"h": 31
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "flame.001",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 0,
+						"w": 19,
+						"h": 28
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 19,
+						"h": 28
+					}
+				},
+				{
+					"filename": "flame.002",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 0,
+						"w": 22,
+						"h": 25
+					},
+					"frame": {
+						"x": 22,
+						"y": 1,
+						"w": 22,
+						"h": 25
+					}
+				},
+				{
+					"filename": "flame.000",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 9,
+						"y": 10,
+						"w": 13,
+						"h": 18
+					},
+					"frame": {
+						"x": 46,
+						"y": 1,
+						"w": 13,
+						"h": 18
+					}
+				},
+				{
+					"filename": "flame.004",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 0,
+						"w": 22,
+						"h": 14
+					},
+					"frame": {
+						"x": 61,
+						"y": 1,
+						"w": 22,
+						"h": 14
+					}
+				},
+				{
+					"filename": "flame.003",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 0,
+						"w": 23,
+						"h": 13
+					},
+					"frame": {
+						"x": 61,
+						"y": 17,
+						"w": 23,
+						"h": 13
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:f79a5c1a37764e6b4991d006e3110b62:7bc6fda669c44f8ff009f60ea6c85bb8:b26c26e495ff37c06f5a467dc0bb36fa$"
+	}
+}

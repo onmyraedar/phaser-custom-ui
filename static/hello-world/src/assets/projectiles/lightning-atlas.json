@@ -1,0 +1,104 @@
+{
+	"textures": [
+		{
+			"image": "lightning-atlas.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 15,
+				"h": 66
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "lightning.000",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 1,
+						"w": 13,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 13,
+						"h": 15
+					}
+				},
+				{
+					"filename": "lightning.002",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 1,
+						"w": 13,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 18,
+						"w": 13,
+						"h": 15
+					}
+				},
+				{
+					"filename": "lightning.001",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 1,
+						"w": 13,
+						"h": 14
+					},
+					"frame": {
+						"x": 1,
+						"y": 35,
+						"w": 13,
+						"h": 14
+					}
+				},
+				{
+					"filename": "lightning.003",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 1,
+						"w": 13,
+						"h": 14
+					},
+					"frame": {
+						"x": 1,
+						"y": 51,
+						"w": 13,
+						"h": 14
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:8bf7be0ff43570bb0d135c231d3e9505:904512989fd1ffc023ebaa85605bb4b7:c17cd12b9f374418134ec86f81a1611b$"
+	}
+}

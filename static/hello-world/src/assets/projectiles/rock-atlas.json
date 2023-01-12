@@ -1,0 +1,104 @@
+{
+	"textures": [
+		{
+			"image": "rock-atlas.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 18,
+				"h": 69
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "rock.001",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 16,
+						"h": 16
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 16,
+						"h": 16
+					}
+				},
+				{
+					"filename": "rock.000",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 1,
+						"w": 16,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 19,
+						"w": 16,
+						"h": 15
+					}
+				},
+				{
+					"filename": "rock.002",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 1,
+						"w": 16,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 36,
+						"w": 16,
+						"h": 15
+					}
+				},
+				{
+					"filename": "rock.003",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 1,
+						"w": 16,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 53,
+						"w": 16,
+						"h": 15
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:8789d8f98e3874cc859e6696b7fa2723:3d979774b58655e4f4df229fef05eb99:f9b31a8e3dab386727e5f4cb9131b5e6$"
+	}
+}

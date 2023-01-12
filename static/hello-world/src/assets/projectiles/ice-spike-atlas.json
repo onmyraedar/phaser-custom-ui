@@ -1,0 +1,188 @@
+{
+	"textures": [
+		{
+			"image": "ice-spike-atlas.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 160,
+				"h": 12
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "ice-spike.000",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 18,
+						"h": 10
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 18,
+						"h": 10
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 18,
+						"h": 10
+					}
+				},
+				{
+					"filename": "ice-spike.001",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 18,
+						"h": 10
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 18,
+						"h": 10
+					},
+					"frame": {
+						"x": 21,
+						"y": 1,
+						"w": 18,
+						"h": 10
+					}
+				},
+				{
+					"filename": "ice-spike.002",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 18,
+						"h": 10
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 18,
+						"h": 10
+					},
+					"frame": {
+						"x": 41,
+						"y": 1,
+						"w": 18,
+						"h": 10
+					}
+				},
+				{
+					"filename": "ice-spike.003",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 18,
+						"h": 10
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 18,
+						"h": 10
+					},
+					"frame": {
+						"x": 61,
+						"y": 1,
+						"w": 18,
+						"h": 10
+					}
+				},
+				{
+					"filename": "ice-spike.004",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 18,
+						"h": 10
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 18,
+						"h": 10
+					},
+					"frame": {
+						"x": 81,
+						"y": 1,
+						"w": 18,
+						"h": 10
+					}
+				},
+				{
+					"filename": "ice-spike.005",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 18,
+						"h": 10
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 18,
+						"h": 10
+					},
+					"frame": {
+						"x": 101,
+						"y": 1,
+						"w": 18,
+						"h": 10
+					}
+				},
+				{
+					"filename": "ice-spike.006",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 18,
+						"h": 10
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 18,
+						"h": 10
+					},
+					"frame": {
+						"x": 121,
+						"y": 1,
+						"w": 18,
+						"h": 10
+					}
+				},
+				{
+					"filename": "ice-spike.007",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 18,
+						"h": 10
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 18,
+						"h": 10
+					},
+					"frame": {
+						"x": 141,
+						"y": 1,
+						"w": 18,
+						"h": 10
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:cd0566f96eaef39f9b490d9128d172a6:7aed728ed82fbbbff42970826fe17db9:204562ec162b8b5ea86a3d7dd17dcfbb$"
+	}
+}

@@ -1,0 +1,104 @@
+{
+	"textures": [
+		{
+			"image": "fireball-atlas.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 32,
+				"h": 51
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "fireball.000",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 1,
+						"w": 15,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 15,
+						"h": 15
+					}
+				},
+				{
+					"filename": "fireball.002",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 1,
+						"y": 1,
+						"w": 15,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 18,
+						"w": 15,
+						"h": 15
+					}
+				},
+				{
+					"filename": "fireball.001",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 1,
+						"w": 14,
+						"h": 15
+					},
+					"frame": {
+						"x": 1,
+						"y": 35,
+						"w": 14,
+						"h": 15
+					}
+				},
+				{
+					"filename": "fireball.003",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 16,
+						"h": 16
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 1,
+						"w": 14,
+						"h": 15
+					},
+					"frame": {
+						"x": 17,
+						"y": 35,
+						"w": 14,
+						"h": 15
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:7402d68734abaa577274f999be9557ad:1c09853f1c6e7fe18a40fde385fac490:b1c5b59c991c1d732e2e169e0c40f238$"
+	}
+}
