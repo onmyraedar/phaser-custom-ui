@@ -113,6 +113,26 @@ function Game() {
           isOnCooldown: false,
           cooldownTimer: null,
         },
+        rock: {
+          isOnCooldown: false,
+          cooldownTimer: null,
+        },
+        thunder: {
+          isOnCooldown: false,
+          cooldownTimer: null,
+        },
+        ice: {
+          isOnCooldown: false,
+          cooldownTimer: null,
+        },
+        flame: {
+          isOnCooldown: false,
+          cooldownTimer: null,
+        },
+        heal: {
+          isOnCooldown: false,
+          cooldownTimer: null,
+        },        
       };
 
       // Sets the collision between the player and the dungeon walls
@@ -221,6 +241,23 @@ function Game() {
       this.iceSpikes = new ProjectileGroup(this, "ice-spike-atlas", "ice-spike.007");
       this.fireballs = new ProjectileGroup(this, "fireball-atlas", "fireball.001");
 
+      const abilityProjectileGroups = [
+        this.shurikens, this.plantSpikes, this.rocks,
+        this.lightningBolts, this.iceSpikes, this.fireballs
+      ];
+
+      abilityProjectileGroups.forEach((group) => {
+        this.physics.add.collider(group, worldLayer, (obj1, obj2) => {
+
+          // The projectile object involved in the collision
+          const projectile = [obj1, obj2].find((obj) => obj instanceof Projectile);
+          projectile.setActive(false);
+          projectile.setVisible(false);    
+  
+        });
+      });
+
+      /*
       // Each shuriken should disappear after colliding with the world
       this.physics.add.collider(this.shurikens, worldLayer, (obj1, obj2) => {
 
@@ -229,7 +266,17 @@ function Game() {
         shuriken.setActive(false);
         shuriken.setVisible(false);    
 
-      })
+      });
+
+      // Each plant spike should disappear after colliding with the world
+      this.physics.add.collider(this.plantSpikes, worldLayer, (obj1, obj2) => {
+
+        const plantSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        plantSpike.setActive(false);
+        plantSpike.setVisible(false);
+
+      });
+      */
 
       // Shuriken collision with enemies
       this.physics.add.collider(this.shurikens, this.enemies, (obj1, obj2) => {
@@ -239,16 +286,7 @@ function Game() {
         shuriken.setActive(false);
         shuriken.setVisible(false);  
 
-      })
-
-      // Each plant spike should disappear after colliding with the world
-      this.physics.add.collider(this.plantSpikes, worldLayer, (obj1, obj2) => {
-
-        const plantSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
-        plantSpike.setActive(false);
-        plantSpike.setVisible(false);
-
-      })
+      });
 
       // Plant spike collision with enemies
       this.physics.add.collider(this.plantSpikes, this.enemies, (obj1, obj2) => {
@@ -269,7 +307,7 @@ function Game() {
           enemy.rootAnim.setActive(false).setVisible(false);
         })
 
-      })      
+      });      
       
       // Adds the ability keys
       this.keys = this.input.keyboard.addKeys({
