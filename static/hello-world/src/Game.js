@@ -259,12 +259,12 @@ function Game() {
       this.enemies.add(this.enemy);
 
       // Projectile groups
-      this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000");
-      this.plantSpikes = new ProjectileGroup(this, "plant-spike-atlas", "plant-spike.002");
-      this.rocks = new ProjectileGroup(this, "rock-atlas", "rock.000");
-      this.lightningBolts = new ProjectileGroup(this, "lightning-atlas", "lightning.003");
-      this.iceSpikes = new ProjectileGroup(this, "ice-spike-atlas", "ice-spike.007");
-      this.fireballs = new ProjectileGroup(this, "fireball-atlas", "fireball.001");
+      this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000", 3);
+      this.plantSpikes = new ProjectileGroup(this, "plant-spike-atlas", "plant-spike.002", 4);
+      this.rocks = new ProjectileGroup(this, "rock-atlas", "rock.000", 7);
+      this.lightningBolts = new ProjectileGroup(this, "lightning-atlas", "lightning.003", 3);
+      this.iceSpikes = new ProjectileGroup(this, "ice-spike-atlas", "ice-spike.007", 5);
+      this.fireballs = new ProjectileGroup(this, "fireball-atlas", "fireball.001", 4);
 
       const abilityProjectileGroups = [
         this.shurikens, this.plantSpikes, this.rocks,
@@ -278,6 +278,7 @@ function Game() {
           const projectile = [obj1, obj2].find((obj) => obj instanceof Projectile);
           projectile.setActive(false);
           projectile.setVisible(false);    
+          projectile.damageOnImpact = 0;
   
         });
       });
@@ -285,10 +286,21 @@ function Game() {
       // Shuriken collision with enemies
       this.physics.add.collider(this.shurikens, this.enemies, (obj1, obj2) => {
 
+        console.log("Collision detected");
+
         // The shuriken is the Projectile object involved in the collision
         const shuriken = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        const enemy = [obj1, obj2].find((obj) => obj !== shuriken);
+
+        enemy.takeDamage(shuriken.damageOnImpact);
+
+        // After the projectile makes its first collision, it should not do damage
+        // Damage on impact is reset when the projectile is fired again
+        shuriken.damageOnImpact = 0;
+
         shuriken.setActive(false);
-        shuriken.setVisible(false);  
+        shuriken.setVisible(false);
+
 
       });
 

@@ -4,9 +4,14 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
 
   constructor(scene, x, y) {
     super(scene, x, y, "shuriken-atlas", "shuriken.000");
+    this.defaultDamage = 0;
+    this.damageOnImpact = 0;
   }
 
   fire (x, y, wielder) {
+
+    // Resets the projectile damage
+    this.damageOnImpact = this.defaultDamage;
 
     // Places the projectile at a specific x, y position
     this.body.reset(x, y);
@@ -67,7 +72,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
 
 export default class ProjectileGroup extends Phaser.Physics.Arcade.Group {
   
-  constructor(scene, projectileTexture, projectileFrame) {
+  constructor(scene, projectileTexture, projectileFrame, defaultDamage) {
     super(scene.physics.world, scene);
 
     this.createMultiple({
@@ -81,6 +86,7 @@ export default class ProjectileGroup extends Phaser.Physics.Arcade.Group {
 
     this.getChildren().forEach((projectile) => {
       projectile.setTexture(projectileTexture, projectileFrame);
+      projectile.defaultDamage = defaultDamage;
     }, this);
 
   }
