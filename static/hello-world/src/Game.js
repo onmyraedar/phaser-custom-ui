@@ -112,26 +112,32 @@ function Game() {
         plant: {
           isOnCooldown: false,
           cooldownTimer: null,
+          cooldown: 5000,
         },
         rock: {
           isOnCooldown: false,
           cooldownTimer: null,
+          cooldown: 5000, 
         },
         thunder: {
           isOnCooldown: false,
           cooldownTimer: null,
+          cooldown: 6000,
         },
         ice: {
           isOnCooldown: false,
           cooldownTimer: null,
+          cooldown: 6000,
         },
         flame: {
           isOnCooldown: false,
           cooldownTimer: null,
+          cooldown: 8000,
         },
         heal: {
           isOnCooldown: false,
           cooldownTimer: null,
+          cooldown: 4000,
         },        
       };
 
@@ -301,27 +307,35 @@ function Game() {
         shuriken.setActive(false);
         shuriken.setVisible(false);
 
-
       });
 
       // Plant spike collision with enemies
       this.physics.add.collider(this.plantSpikes, this.enemies, (obj1, obj2) => {
 
         const plantSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
-        plantSpike.setActive(false);
-        plantSpike.setVisible(false);  
+        const enemy = [obj1, obj2].find((obj) => obj !== plantSpike);
 
-        const enemy = [obj1, obj2].find((obj) => obj !== plantSpike)
+        // The if clause prevents the damage, root, and projectile update calls 
+        // from firing twice
+        if (plantSpike.damageOnImpact > 0) {
+          enemy.takeDamage(plantSpike.damageOnImpact);
+          
+          // Root the enemy
+          enemy.isRooted = true;
+          enemy.rootAnim.setActive(true).setVisible(true);
 
-        // Root the enemy
-        enemy.isRooted = true;
-        enemy.rootAnim.setActive(true).setVisible(true);
+          // The root lasts for 3 seconds
+          this.time.delayedCall(3000, () => {
+            enemy.isRooted = false;
+            enemy.rootAnim.setActive(false).setVisible(false);
+          });
+          
+          // No damage after first hit
+          plantSpike.damageOnImpact = 0;
 
-        // The root lasts for 2 seconds
-        this.time.delayedCall(2000, () => {
-          enemy.isRooted = false;
-          enemy.rootAnim.setActive(false).setVisible(false);
-        })
+          plantSpike.setActive(false);
+          plantSpike.setVisible(false); 
+        } 
 
       });      
       
@@ -398,13 +412,19 @@ function Game() {
 
       }
 
-      // Updates the enemy's movement and health indicator
-      this.enemy.followPlayer(20);
+      // Updates the enemy's health indicator
       this.enemy.updateHealthIndicator();
 
       // Plays an animation to reflect enemy root
       if (this.enemy.isRooted) {
+        this.enemy.setVelocity(0);
+        this.enemy.rootAnim.x = this.enemy.x;
+        this.enemy.rootAnim.y = this.enemy.y;
         this.enemy.rootAnim.anims.play("enemy-root", true);
+      } else {
+
+        // If the enemy is not rooted, they move towards the player
+        this.enemy.followPlayer(20);
       }
 
       // Pressing the space key throws a shuriken
@@ -415,17 +435,19 @@ function Game() {
       // Pressing the 1 key fires the root ability
       if (Phaser.Input.Keyboard.JustDown(this.keys.one)) {
 
-        if (!this.player.ability.plant.isOnCooldown) {
+        const plantAbility = this.player.ability.plant;
+
+        if (!plantAbility.isOnCooldown) {
           this.plantSpikes.fireProjectile(this.player.x, this.player.y, 
             this.player);
 
           // The player's plant ability is now on cooldown
-          this.player.ability.plant.isOnCooldown = true;
+          plantAbility.isOnCooldown = true;
 
-          // The player's ability cooldown lasts for 3 seconds
-          this.player.ability.plant.cooldownTimer = this.time.delayedCall(
-            3000, () => {
-            this.player.ability.plant.isOnCooldown = false;
+          // After cooldown is over, reactivate the ability
+          plantAbility.cooldownTimer = this.time.delayedCall(
+            plantAbility.cooldown, () => {
+              plantAbility.isOnCooldown = false;
           })
         }
 
