@@ -221,6 +221,31 @@ function Game() {
       this.enemy = this.physics.add
         .sprite(200, 200, "player-atlas", "ninja-idle-front")
         .setImmovable(true);
+
+      this.enemy.maxHealth = 100;
+      this.enemy.currentHealth = 100;
+
+      this.enemy.healthIndicator = this.add.text(this.enemy.x, this.enemy.y + 20,
+        this.enemy.currentHealth, { font: "12px Courier", fill: "#000000" })
+
+      this.enemy.updateHealthIndicator = () => {
+        this.enemy.healthIndicator.x = this.enemy.x;
+        this.enemy.healthIndicator.y = this.enemy.y - 18;
+        this.enemy.healthIndicator.setText(this.enemy.currentHealth);
+      };
+
+      this.enemy.takeDamage = (damage) => {
+        this.enemy.currentHealth -= damage;
+
+        // Implement death logic below
+
+      };
+
+      this.enemy.followPlayer = (speed) => {
+        this.physics.moveToObject(this.enemy, this.player, speed);
+      };
+
+      // Enemies are initialized with no status effects
       this.enemy.isRooted = false;
 
       // Adds hidden status effect for enemy
@@ -256,27 +281,6 @@ function Game() {
   
         });
       });
-
-      /*
-      // Each shuriken should disappear after colliding with the world
-      this.physics.add.collider(this.shurikens, worldLayer, (obj1, obj2) => {
-
-        // The shuriken is the Projectile object involved in the collision
-        const shuriken = [obj1, obj2].find((obj) => obj instanceof Projectile);
-        shuriken.setActive(false);
-        shuriken.setVisible(false);    
-
-      });
-
-      // Each plant spike should disappear after colliding with the world
-      this.physics.add.collider(this.plantSpikes, worldLayer, (obj1, obj2) => {
-
-        const plantSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
-        plantSpike.setActive(false);
-        plantSpike.setVisible(false);
-
-      });
-      */
 
       // Shuriken collision with enemies
       this.physics.add.collider(this.shurikens, this.enemies, (obj1, obj2) => {
@@ -381,6 +385,10 @@ function Game() {
         }
 
       }
+
+      // Updates the enemy's movement and health indicator
+      this.enemy.followPlayer(20);
+      this.enemy.updateHealthIndicator();
 
       // Plays an animation to reflect enemy root
       if (this.enemy.isRooted) {
