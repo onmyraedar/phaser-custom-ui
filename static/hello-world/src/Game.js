@@ -50,6 +50,12 @@ import {
   createStatusEffectAnims
 } from "./utils/Animations";
 
+// Character configuration
+import { 
+  configureAbilities, 
+  fireIfAvailable 
+} from "./EnemyConfig";
+
 function Game() {
 
   // Scene
@@ -170,6 +176,13 @@ function Game() {
         }
       }
 
+      this.player.takeDamage = (damage) => {
+        this.player.currentHealth -= damage;
+
+        // Implement death logic below
+
+      };
+
       // Sets the collision between the player and the dungeon walls
       this.physics.add.collider(this.player, worldLayer);
 
@@ -200,11 +213,13 @@ function Game() {
         startingY: 200,
         texture: "player-atlas",
         frame: "ninja-idle-front",
+        abilities: ["fire"],
       }, {
         startingX: 250, 
         startingY: 200,
         texture: "player-atlas",
         frame: "ninja-idle-front",
+        abilities: ["fire"],
       }];
 
       // Adds test enemy to the group of enemies
@@ -257,6 +272,9 @@ function Game() {
           .sprite(enemy.x, enemy.y, "flame-atlas", "flame.000")
           .setActive(false)
           .setVisible(false);
+
+        // Parameters: scene, enemy, data about unlocked enemy abilities
+        configureAbilities(this, enemy, enemyData.abilities);
 
         this.enemies.add(enemy);
 
@@ -502,6 +520,10 @@ function Game() {
           // at a speed of 36 pixels per second
           enemy.followPlayer(36);
         }
+
+        // Fire enemy abilities, if any are available
+        fireIfAvailable(this, enemy);
+
       });
 
       // If player is healing, play the animation
