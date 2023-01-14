@@ -108,6 +108,9 @@ function Game() {
       const belowLayer = map.createLayer("Below Player", floorTileset, 0, 0);
       const worldLayer = map.createLayer("World", natureTileset, 0, 0);
 
+      // Needed for enemy projectile configuration
+      this.worldLayer = worldLayer;
+
       // Sets collision on the tiles within a layer
       worldLayer.setCollisionByProperty({ collides: true });
 

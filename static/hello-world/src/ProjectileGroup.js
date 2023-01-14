@@ -8,7 +8,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.damageOnImpact = 0;
   }
 
-  fire (x, y, wielder) {
+  fire (x, y, wielder, scene) {
 
     // Resets the projectile damage
     this.damageOnImpact = this.defaultDamage;
@@ -22,49 +22,73 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.setVisible(true);
 
     const speed = 250;
-    const wielderVelocity = wielder.body.velocity;
-    const wielderLastIdleDirection = wielder.lastIdleDirection;
 
-    // If the wielder is not moving, get their last idle direction
-    // and make the projectile move in the same direction
-    if (wielderVelocity.x == 0 && wielderVelocity.y == 0) {
-      switch (wielderLastIdleDirection) {
-        case "left":
-          this.setVelocity(-speed, 0);
-          break;
-        case "right":
-          this.setVelocity(speed, 0);
-          break;
-        case "back":
-          this.setVelocity(0, -speed);
-          break;
-        case "front":
-          this.setVelocity(0, speed);
-          break;
+    // This clause controls player firing
+    if (wielder.hasOwnProperty('lastIdleDirection')) {
+
+      const wielderVelocity = wielder.body.velocity;
+      const wielderLastIdleDirection = wielder.lastIdleDirection;
+  
+      // If the wielder is not moving, get their last idle direction
+      // and make the projectile move in the same direction
+      if (wielderVelocity.x == 0 && wielderVelocity.y == 0) {
+        switch (wielderLastIdleDirection) {
+          case "left":
+            this.setVelocity(-speed, 0);
+            break;
+          case "right":
+            this.setVelocity(speed, 0);
+            break;
+          case "back":
+            this.setVelocity(0, -speed);
+            break;
+          case "front":
+            this.setVelocity(0, speed);
+            break;
+        }
+  
+      // If the wielder is moving, we can make the projectile move 
+      // in the same direction as the wielder
+      } else {
+        if (wielderVelocity.x > 0) {
+          this.setVelocityX(speed);
+        } else if (wielderVelocity.x < 0) {
+          this.setVelocityX(-speed);
+        } else {
+          this.setVelocityX(0);
+        }
+  
+        if (wielderVelocity.y > 0) {
+          this.setVelocityY(speed);
+        } else if (wielderVelocity.y < 0) {
+          this.setVelocityY(-speed);
+        } else {
+          this.setVelocityY(0);
+        }
+  
       }
+  
+      this.body.velocity.normalize().scale(speed);
 
-    // If the wielder is moving, we can make the projectile move 
-    // in the same direction as the wielder
+    // This clause controls enemy firing 
     } else {
-      if (wielderVelocity.x > 0) {
-        this.setVelocityX(speed);
-      } else if (wielderVelocity.x < 0) {
-        this.setVelocityX(-speed);
-      } else {
-        this.setVelocityX(0);
-      }
 
-      if (wielderVelocity.y > 0) {
-        this.setVelocityY(speed);
-      } else if (wielderVelocity.y < 0) {
-        this.setVelocityY(-speed);
-      } else {
-        this.setVelocityY(0);
-      }
+      // Compute the angle between enemy and player
+      const firingAngleRad = Phaser.Math.Angle.Between(wielder.x, wielder.y,
+        scene.player.x, scene.player.y);
+
+      const firingAngleDeg = Phaser.Math.RadToDeg(firingAngleRad);
+      
+      // Compute the velocity of the projectile given its firing angle and speed
+      const projectileVelocity = scene.physics.velocityFromAngle(firingAngleDeg, speed);
+
+      console.log(projectileVelocity);
+
+      // Set the velocity of the projectile
+      this.setVelocityX(projectileVelocity.x);
+      this.setVelocityY(projectileVelocity.y);
 
     }
-
-    this.body.velocity.normalize().scale(speed);
 
   }
 
@@ -89,6 +113,8 @@ export default class ProjectileGroup extends Phaser.Physics.Arcade.Group {
       projectile.defaultDamage = defaultDamage;
     }, this);
 
+    this.scene = scene;
+
   }
 
   fireProjectile(x, y, wielder) {
@@ -96,7 +122,7 @@ export default class ProjectileGroup extends Phaser.Physics.Arcade.Group {
     // Gets the first projectile that is ready to be fired
     const projectile = this.getFirstDead(false);
     if (projectile) {
-      projectile.fire(x, y, wielder);
+      projectile.fire(x, y, wielder, this.scene);
     }
     
   }
