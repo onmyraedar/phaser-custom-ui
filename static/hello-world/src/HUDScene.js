@@ -3,6 +3,12 @@ import Phaser from "phaser";
 // HUD icons
 import healthIconImg from "./assets/hud/HeartIcon.png";
 import rootIconImg from "./assets/hud/ScrollPlant.png";
+import rockIconImg from "./assets/hud/ScrollRock.png";
+import thunderIconImg from "./assets/hud/ScrollThunder.png";
+import iceIconImg from "./assets/hud/ScrollIce.png";
+import flameIconImg from "./assets/hud/ScrollFire.png";
+import emptyScrollIconImg from "./assets/hud/ScrollEmpty.png";
+import healIconImg from "./assets/hud/Medipack.png";
 
 export default class HUDScene extends Phaser.Scene {
 
@@ -15,40 +21,72 @@ export default class HUDScene extends Phaser.Scene {
     // Loading HUD icons
     this.load.image("health-icon", healthIconImg);
     this.load.image("root-icon", rootIconImg);
+    this.load.image("rock-icon", rockIconImg);
+    this.load.image("thunder-icon", thunderIconImg);
+    this.load.image("ice-icon", iceIconImg);
+    this.load.image("flame-icon", flameIconImg);
+    this.load.image("empty-scroll-icon", emptyScrollIconImg);
+    this.load.image("heal-icon", healIconImg);
 
   }
 
   create() {
 
       // Rectangle parameters: x, y, width, height, fill, alpha
-      const hudContainer = this.add.rectangle(5, 5, 790, 50, 0xffffff, 0.8)
+      const hudContainer = this.add.rectangle(0, 550, 800, 50, 0xffffff, 0.85)
         .setOrigin(0, 0);
 
       // Player health indicator
-      const healthIcon = this.add.image(30, 25, "health-icon").setScale(2);
-      const healthText = this.add.text(50, 25, "Health: 100",
+      const healthIcon = this.add.image(30, 575, "health-icon").setScale(2);
+      const healthText = this.add.text(50, 575, "100",
         { font: "20px Courier", fill: "#000000" });
 
-      // Root cooldown indicator
-      const rootIcon = this.add.image(220, 25, "root-icon").setScale(2);
-      const rootCDText = this.add.text(240, 25, "CD: 3",
+      // Root CD indicator
+      const rootIcon = this.add.image(120, 575, "root-icon").setScale(2);
+      const rootCDText = this.add.text(140, 575, "Ready",
+        { font: "20px Courier", fill: "#000000" });
+
+      // Rock CD indicator
+      const rockIcon = this.add.image(240, 575, "rock-icon").setScale(2);
+      const rockCDText = this.add.text(260, 575, "Ready",
+        { font: "20px Courier", fill: "#000000" });
+
+      // Thunder CD indicator
+      const thunderIcon = this.add.image(360, 575, "thunder-icon").setScale(2);
+      const thunderCDText = this.add.text(380, 575, "Ready",
+        { font: "20px Courier", fill: "#000000" });
+
+      // Ice CD indicator
+      const iceIcon = this.add.image(480, 575, "ice-icon").setScale(2);
+      const iceCDText = this.add.text(500, 575, "Ready",
+        { font: "20px Courier", fill: "#000000" });
+
+      // Flame CD indicator
+      const flameIcon = this.add.image(600, 575, "flame-icon").setScale(2);
+      const flameCDText = this.add.text(620, 575, "Ready",
+        { font: "20px Courier", fill: "#000000" });
+
+      // Heal CD indicator
+      const emptyScrollIcon = this.add.image(720, 575, "empty-scroll-icon").setScale(2);
+      const healIcon = this.add.image(720, 575, "heal-icon").setScale(2);
+      const healCDText = this.add.text(740, 575, "Ready",
         { font: "20px Courier", fill: "#000000" });
 
       // Event listener for MainScene changes
       const mainScene = this.scene.get("MainScene");
+
       mainScene.events.on("update-hud", (player) => {
-        if (player.ability.plant.cooldownTimer) {
+        if (player.ability.plant.isOnCooldown) {
           const rootCD = player.ability.plant.cooldownTimer.getOverallRemainingSeconds();
-          if (rootCD == 0) {
-            rootCDText.setText(`Ready`);
-          } else {
-            const formattedRootCD = rootCD.toFixed(2);
-            rootCDText.setText(`CD: ${formattedRootCD}`);
-          }
+          const formattedRootCD = Math.round(rootCD);
+          rootCDText.setText(`CD: ${formattedRootCD}`);
         } else {
           rootCDText.setText(`Ready`);
         }
-      })
+
+      });
+
+
   }
 
 };
