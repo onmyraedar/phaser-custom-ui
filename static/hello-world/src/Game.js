@@ -225,14 +225,14 @@ function Game() {
         abilities: ["fire"],
       }];
 
-      // Adds test enemy to the group of enemies
+      // Add group of enemies
       this.enemies = this.add.group();
 
       enemiesData.forEach((enemyData) => {
 
         const enemy = this.physics.add
         .sprite(enemyData.startingX, enemyData.startingY, enemyData.texture, enemyData.frame)
-        .setImmovable(true);
+        .setPushable(false);
         
         enemy.maxHealth = 100;
         enemy.currentHealth = 100;
@@ -287,6 +287,12 @@ function Game() {
         this.enemies.add(enemy);
 
       });
+
+      // Add collider between enemies and the world layer
+      this.physics.add.collider(this.enemies, worldLayer);
+
+      // Add collider between members of the enemy group
+      this.physics.add.collider(this.enemies, this.enemies);
 
       // Projectile groups
       this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000", 2);
