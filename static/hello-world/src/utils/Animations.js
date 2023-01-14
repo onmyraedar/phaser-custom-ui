@@ -62,6 +62,19 @@ export const createStatusEffectAnims = (anims) => {
     repeat: -1,
   });
 
+    // Stun animation
+    anims.create({
+      key: "enemy-stun",
+      frames: anims.generateFrameNames("stun-atlas", {
+        prefix: "stun.",
+        start: 0,
+        end: 7,
+        zeroPad: 3,          
+      }),
+      frameRate: 15,
+      repeat: -1,
+    });
+
   // Slow animation
   anims.create({
     key: "enemy-slow",

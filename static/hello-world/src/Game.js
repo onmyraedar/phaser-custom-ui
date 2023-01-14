@@ -259,12 +259,17 @@ function Game() {
   
         // Enemies are initialized with no status effects
         enemy.isRooted = false;
+        enemy.isStunned = false;
         enemy.isSlowed = false;
         enemy.isOnFire = false;
   
         // Adds hidden status effect for enemy
         enemy.rootAnim = this.physics.add
           .sprite(enemy.x, enemy.y, "root-atlas", "root.000")
+          .setActive(false)
+          .setVisible(false);
+        enemy.stunAnim = this.physics.add
+          .sprite(enemy.x, enemy.y, "stun-atlas", "stun.000")
           .setActive(false)
           .setVisible(false);
         enemy.slowAnim = this.physics.add
@@ -287,7 +292,7 @@ function Game() {
       this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000", 2);
       this.plantSpikes = new ProjectileGroup(this, "plant-spike-atlas", "plant-spike.002", 4);
       this.rocks = new ProjectileGroup(this, "rock-atlas", "rock.000", 7);
-      this.lightningBolts = new ProjectileGroup(this, "lightning-atlas", "lightning.003", 3);
+      this.lightningBolts = new ProjectileGroup(this, "lightning-atlas", "lightning.003", 4);
       this.iceSpikes = new ProjectileGroup(this, "ice-spike-atlas", "ice-spike.007", 5);
       this.fireballs = new ProjectileGroup(this, "fireball-atlas", "fireball.001", 4);
 
@@ -352,6 +357,36 @@ function Game() {
 
           plantSpike.setActive(false);
           plantSpike.setVisible(false); 
+        } 
+
+      });
+
+      // Lightning bolt collision with enemies
+      this.physics.add.collider(this.lightningBolts, this.enemies, (obj1, obj2) => {
+
+        const lightningBolt = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        const enemy = [obj1, obj2].find((obj) => obj !== lightningBolt);
+
+        // The if clause prevents the damage, root, and projectile update calls 
+        // from firing twice
+        if (lightningBolt.damageOnImpact > 0) {
+          enemy.takeDamage(lightningBolt.damageOnImpact);
+          
+          // Stun the enemy
+          enemy.isStunned = true;
+          enemy.stunAnim.setActive(true).setVisible(true);
+
+          // The stun lasts for 2 seconds
+          this.time.delayedCall(2000, () => {
+            enemy.isStunned = false;
+            enemy.stunAnim.setActive(false).setVisible(false);
+          });
+          
+          // No damage after first hit
+          lightningBolt.damageOnImpact = 0;
+
+          lightningBolt.setActive(false);
+          lightningBolt.setVisible(false); 
         } 
 
       });
@@ -502,6 +537,11 @@ function Game() {
           enemy.rootAnim.y = enemy.y;
           enemy.rootAnim.anims.play("enemy-root", true);
         }
+        if (enemy.isStunned) {
+          enemy.stunAnim.x = enemy.x;
+          enemy.stunAnim.y = enemy.y;
+          enemy.stunAnim.anims.play("enemy-stun", true);
+        }
         if (enemy.isSlowed) {
           enemy.slowAnim.x = enemy.x;
           enemy.slowAnim.y = enemy.y;
@@ -514,7 +554,7 @@ function Game() {
         }
 
         // Check for status effects that impact enemy movement
-        if (enemy.isRooted) {
+        if (enemy.isRooted || enemy.isStunned) {
           enemy.setVelocity(0);
         } else if (enemy.isSlowed) {
           enemy.followPlayer(18);
@@ -524,8 +564,11 @@ function Game() {
           enemy.followPlayer(36);
         }
 
-        // Fire enemy abilities, if any are available
-        fireIfAvailable(this, enemy);
+        // Check for status effects that impact enemy attacks
+        if (!enemy.isStunned) {
+          // Fire enemy abilities, if any are available
+          fireIfAvailable(this, enemy);
+        }
 
       });
 
@@ -567,8 +610,22 @@ function Game() {
       }
 
       if (Phaser.Input.Keyboard.JustDown(this.keys.three)) {
-        this.lightningBolts.fireProjectile(this.player.x, this.player.y,
-          this.player);
+
+        const thunderAbility = this.player.ability.thunder;
+
+        if (!thunderAbility.isOnCooldown) {
+          this.lightningBolts.fireProjectile(this.player.x, this.player.y, 
+            this.player);
+
+          // The player's thunder ability is now on cooldown
+          thunderAbility.isOnCooldown = true;
+
+          // After cooldown is over, reactivate the ability
+          thunderAbility.cooldownTimer = this.time.delayedCall(
+            thunderAbility.cooldown, () => {
+              thunderAbility.isOnCooldown = false;
+          });
+        }
       }
 
       // Pressing the 4 key fires the ice ability
