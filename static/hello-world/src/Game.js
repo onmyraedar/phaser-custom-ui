@@ -194,56 +194,73 @@ function Game() {
       createPlayerMovementAnims(anims);
       createStatusEffectAnims(anims);
 
-      // Temporary test enemy
-      this.enemy = this.physics.add
-        .sprite(200, 200, "player-atlas", "ninja-idle-front")
-        .setImmovable(true);
-
-      this.enemy.maxHealth = 100;
-      this.enemy.currentHealth = 100;
-
-      this.enemy.healthIndicator = this.add.text(this.enemy.x, this.enemy.y + 20,
-        this.enemy.currentHealth, { font: "12px Courier", fill: "#000000" })
-
-      this.enemy.updateHealthIndicator = () => {
-        this.enemy.healthIndicator.x = this.enemy.x;
-        this.enemy.healthIndicator.y = this.enemy.y - 18;
-        this.enemy.healthIndicator.setText(this.enemy.currentHealth);
-      };
-
-      this.enemy.takeDamage = (damage) => {
-        this.enemy.currentHealth -= damage;
-
-        // Implement death logic below
-
-      };
-
-      this.enemy.followPlayer = (speed) => {
-        this.physics.moveToObject(this.enemy, this.player, speed);
-      };
-
-      // Enemies are initialized with no status effects
-      this.enemy.isRooted = false;
-      this.enemy.isSlowed = false;
-      this.enemy.isOnFire = false;
-
-      // Adds hidden status effect for enemy
-      this.enemy.rootAnim = this.physics.add
-        .sprite(this.enemy.x, this.enemy.y, "root-atlas", "root.000")
-        .setActive(false)
-        .setVisible(false);
-      this.enemy.slowAnim = this.physics.add
-        .sprite(this.enemy.x, this.enemy.y, "slow-atlas", "slow.000")
-        .setActive(false)
-        .setVisible(false);
-      this.enemy.onFireAnim = this.physics.add
-        .sprite(this.enemy.x, this.enemy.y, "flame-atlas", "flame.000")
-        .setActive(false)
-        .setVisible(false);
+      // Attempt to create two test enemies
+      const enemiesData = [{
+        startingX: 200, 
+        startingY: 200,
+        texture: "player-atlas",
+        frame: "ninja-idle-front",
+      }, {
+        startingX: 250, 
+        startingY: 200,
+        texture: "player-atlas",
+        frame: "ninja-idle-front",
+      }];
 
       // Adds test enemy to the group of enemies
       this.enemies = this.add.group();
-      this.enemies.add(this.enemy);
+
+      enemiesData.forEach((enemyData) => {
+
+        const enemy = this.physics.add
+        .sprite(enemyData.startingX, enemyData.startingY, enemyData.texture, enemyData.frame)
+        .setImmovable(true);
+        
+        enemy.maxHealth = 100;
+        enemy.currentHealth = 100;
+
+        enemy.healthIndicator = this.add.text(enemy.x, enemy.y + 20,
+          enemy.currentHealth, { font: "12px Courier", fill: "#000000" });
+
+        enemy.updateHealthIndicator = () => {
+          enemy.healthIndicator.x = enemy.x;
+          enemy.healthIndicator.y = enemy.y - 18;
+          enemy.healthIndicator.setText(enemy.currentHealth);
+        };
+        
+        enemy.takeDamage = (damage) => {
+          enemy.currentHealth -= damage;
+  
+          // Implement death logic below
+  
+        };
+  
+        enemy.followPlayer = (speed) => {
+          this.physics.moveToObject(enemy, this.player, speed);
+        };
+  
+        // Enemies are initialized with no status effects
+        enemy.isRooted = false;
+        enemy.isSlowed = false;
+        enemy.isOnFire = false;
+  
+        // Adds hidden status effect for enemy
+        enemy.rootAnim = this.physics.add
+          .sprite(enemy.x, enemy.y, "root-atlas", "root.000")
+          .setActive(false)
+          .setVisible(false);
+        enemy.slowAnim = this.physics.add
+          .sprite(enemy.x, enemy.y, "slow-atlas", "slow.000")
+          .setActive(false)
+          .setVisible(false);
+        enemy.onFireAnim = this.physics.add
+          .sprite(enemy.x, enemy.y, "flame-atlas", "flame.000")
+          .setActive(false)
+          .setVisible(false);
+
+        this.enemies.add(enemy);
+
+      });
 
       // Projectile groups
       this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000", 2);
@@ -454,36 +471,38 @@ function Game() {
 
       }
 
-      // Updates the enemy's health indicator
-      this.enemy.updateHealthIndicator();
+      this.enemies.getChildren().forEach((enemy) => {
+        // Updates the enemy's health indicator
+        enemy.updateHealthIndicator();
 
-      // Determines which animation to play
-      if (this.enemy.isRooted) {
-        this.enemy.rootAnim.x = this.enemy.x;
-        this.enemy.rootAnim.y = this.enemy.y;
-        this.enemy.rootAnim.anims.play("enemy-root", true);
-      }
-      if (this.enemy.isSlowed) {
-        this.enemy.slowAnim.x = this.enemy.x;
-        this.enemy.slowAnim.y = this.enemy.y;
-        this.enemy.slowAnim.anims.play("enemy-slow", true);
-      }
-      if (this.enemy.isOnFire) {
-        this.enemy.onFireAnim.x = this.enemy.x;
-        this.enemy.onFireAnim.y = this.enemy.y;
-        this.enemy.onFireAnim.anims.play("enemy-on-fire", true);
-      }
+        // Determines which animation to play
+        if (enemy.isRooted) {
+          enemy.rootAnim.x = enemy.x;
+          enemy.rootAnim.y = enemy.y;
+          enemy.rootAnim.anims.play("enemy-root", true);
+        }
+        if (enemy.isSlowed) {
+          enemy.slowAnim.x = enemy.x;
+          enemy.slowAnim.y = enemy.y;
+          enemy.slowAnim.anims.play("enemy-slow", true);
+        }
+        if (enemy.isOnFire) {
+          enemy.onFireAnim.x = enemy.x;
+          enemy.onFireAnim.y = enemy.y;
+          enemy.onFireAnim.anims.play("enemy-on-fire", true);
+        }
 
-      // Check for status effects that impact enemy movement
-      if (this.enemy.isRooted) {
-        this.enemy.setVelocity(0);
-      } else if (this.enemy.isSlowed) {
-        this.enemy.followPlayer(18);
-      } else {
-        // If the enemy has no status effects, they move towards the player
-        // at a speed of 36 pixels per second
-        this.enemy.followPlayer(36);
-      }
+        // Check for status effects that impact enemy movement
+        if (enemy.isRooted) {
+          enemy.setVelocity(0);
+        } else if (enemy.isSlowed) {
+          enemy.followPlayer(18);
+        } else {
+          // If the enemy has no status effects, they move towards the player
+          // at a speed of 36 pixels per second
+          enemy.followPlayer(36);
+        }
+      });
 
       // If player is healing, play the animation
       if (this.player.isHealing) {
