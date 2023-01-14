@@ -223,6 +223,18 @@ function Game() {
         repeat: -1,
       });
 
+      anims.create({
+        key: "enemy-slow",
+        frames: anims.generateFrameNames("slow-atlas", {
+          prefix: "slow.",
+          start: 0,
+          end: 9,
+          zeroPad: 3,          
+        }),
+        frameRate: 15,
+        repeat: -1,        
+      });
+
       // Temporary test enemy
       this.enemy = this.physics.add
         .sprite(200, 200, "player-atlas", "ninja-idle-front")
@@ -253,12 +265,17 @@ function Game() {
 
       // Enemies are initialized with no status effects
       this.enemy.isRooted = false;
+      this.enemy.isSlowed = false;
 
       // Adds hidden status effect for enemy
       this.enemy.rootAnim = this.physics.add
         .sprite(this.enemy.x, this.enemy.y, "root-atlas", "root.000")
         .setActive(false)
         .setVisible(false);
+      this.enemy.slowAnim = this.physics.add
+        .sprite(this.enemy.x, this.enemy.y, "slow-atlas", "slow.000")
+        .setActive(false)
+        .setVisible(false)
 
       // Adds test enemy to the group of enemies
       this.enemies = this.add.group();
@@ -291,8 +308,6 @@ function Game() {
 
       // Shuriken collision with enemies
       this.physics.add.collider(this.shurikens, this.enemies, (obj1, obj2) => {
-
-        console.log("Collision detected");
 
         // The shuriken is the Projectile object involved in the collision
         const shuriken = [obj1, obj2].find((obj) => obj instanceof Projectile);
@@ -337,8 +352,36 @@ function Game() {
           plantSpike.setVisible(false); 
         } 
 
-      });      
-      
+      });
+
+      // Ice spike collision with enemies
+      this.physics.add.collider(this.iceSpikes, this.enemies, (obj1, obj2) => {
+
+        const iceSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        const enemy = [obj1, obj2].find((obj) => obj !== iceSpike);
+
+        if (iceSpike.damageOnImpact > 0) {
+          enemy.takeDamage(iceSpike.damageOnImpact);
+          
+          // Slow the enemy
+          enemy.isSlowed = true;
+          enemy.slowAnim.setActive(true).setVisible(true);
+
+          // The slow lasts for 4 seconds
+          this.time.delayedCall(4000, () => {
+            enemy.isSlowed = false;
+            enemy.slowAnim.setActive(false).setVisible(false);
+          });
+          
+          // No damage after first hit
+          iceSpike.damageOnImpact = 0;
+
+          iceSpike.setActive(false);
+          iceSpike.setVisible(false); 
+        } 
+
+      });    
+
       // Adds the ability keys
       this.keys = this.input.keyboard.addKeys({
         space: Phaser.Input.Keyboard.KeyCodes.SPACE,
@@ -415,16 +458,27 @@ function Game() {
       // Updates the enemy's health indicator
       this.enemy.updateHealthIndicator();
 
-      // Plays an animation to reflect enemy root
+      // Determines which animation to play
       if (this.enemy.isRooted) {
-        this.enemy.setVelocity(0);
         this.enemy.rootAnim.x = this.enemy.x;
         this.enemy.rootAnim.y = this.enemy.y;
         this.enemy.rootAnim.anims.play("enemy-root", true);
-      } else {
+      }
+      if (this.enemy.isSlowed) {
+        this.enemy.slowAnim.x = this.enemy.x;
+        this.enemy.slowAnim.y = this.enemy.y;
+        this.enemy.slowAnim.anims.play("enemy-slow", true);
+      }
 
-        // If the enemy is not rooted, they move towards the player
-        this.enemy.followPlayer(20);
+      // Status effects impact enemy movement
+      if (this.enemy.isRooted) {
+        this.enemy.setVelocity(0);
+      } else if (this.enemy.isSlowed) {
+        this.enemy.followPlayer(18);
+      } else {
+        // If the enemy has no status effects, they move towards the player
+        // at a speed of 36 pixels per second
+        this.enemy.followPlayer(36);
       }
 
       // Pressing the space key throws a shuriken
@@ -448,22 +502,40 @@ function Game() {
           plantAbility.cooldownTimer = this.time.delayedCall(
             plantAbility.cooldown, () => {
               plantAbility.isOnCooldown = false;
-          })
+          });
         }
-
       }
+
       if (Phaser.Input.Keyboard.JustDown(this.keys.two)) {
         this.rocks.fireProjectile(this.player.x, this.player.y,
           this.player);
       }
+
       if (Phaser.Input.Keyboard.JustDown(this.keys.three)) {
         this.lightningBolts.fireProjectile(this.player.x, this.player.y,
           this.player);
       }
+
+      // Pressing the 4 key fires the ice ability
       if (Phaser.Input.Keyboard.JustDown(this.keys.four)) {
-        this.iceSpikes.fireProjectile(this.player.x, this.player.y,
-          this.player);
+
+        const iceAbility = this.player.ability.ice;
+
+        if (!iceAbility.isOnCooldown) {
+          this.iceSpikes.fireProjectile(this.player.x, this.player.y, 
+            this.player);
+
+          // The player's ice ability is now on cooldown
+          iceAbility.isOnCooldown = true;
+
+          // After cooldown is over, reactivate the ability
+          iceAbility.cooldownTimer = this.time.delayedCall(
+            iceAbility.cooldown, () => {
+              iceAbility.isOnCooldown = false;
+          });
+        }
       }
+
       if (Phaser.Input.Keyboard.JustDown(this.keys.five)) {
         this.fireballs.fireProjectile(this.player.x, this.player.y,
           this.player);

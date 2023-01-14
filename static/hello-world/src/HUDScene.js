@@ -83,6 +83,13 @@ export default class HUDScene extends Phaser.Scene {
         } else {
           rootCDText.setText(`Ready`);
         }
+        if (player.ability.ice.isOnCooldown) {
+          const iceCD = player.ability.ice.cooldownTimer.getOverallRemainingSeconds();
+          const formattedIceCD = Math.round(iceCD);
+          iceCDText.setText(`CD: ${formattedIceCD}`);
+        } else {
+          iceCDText.setText(`Ready`);
+        }
 
       });
 
