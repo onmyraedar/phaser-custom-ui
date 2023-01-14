@@ -113,6 +113,10 @@ function Game() {
       // Add the player's last idle direction
       this.player.lastIdleDirection = "front";
 
+      // Health
+      this.player.maxHealth = 100;
+      this.player.currentHealth = 80;
+
       // Sets the player's ability cooldowns
       this.player.ability = {
         plant: {
@@ -146,6 +150,25 @@ function Game() {
           cooldown: 4000,
         },        
       };
+
+      // Healing status effect and sprite
+      this.player.isHealing = false;
+      this.player.healAnim = this.physics.add
+        .sprite(this.player.x, this.player.y, "heal-atlas", "heal.000")
+        .setActive(false)
+        .setVisible(false);
+
+      this.player.heal = (healPercent) => {
+        const healAmount = this.player.maxHealth * (healPercent / 100);
+        const newHealth = this.player.currentHealth + healAmount;
+
+        // The player can't heal to more than their max health
+        if (newHealth > this.player.maxHealth) {
+          this.player.currentHealth = this.player.maxHealth;
+        } else {
+          this.player.currentHealth += healAmount;
+        }
+      }
 
       // Sets the collision between the player and the dungeon walls
       this.physics.add.collider(this.player, worldLayer);
@@ -417,6 +440,13 @@ function Game() {
         this.enemy.followPlayer(36);
       }
 
+      // If player is healing, play the animation
+      if (this.player.isHealing) {
+        this.player.healAnim.x = this.player.x;
+        this.player.healAnim.y = this.player.y;
+        this.player.healAnim.anims.play("heal", true);  
+      }
+
       // Pressing the space key throws a shuriken
       if (Phaser.Input.Keyboard.JustDown(this.keys.space)) {
         this.shurikens.fireProjectile(this.player.x, this.player.y,
@@ -475,6 +505,36 @@ function Game() {
       if (Phaser.Input.Keyboard.JustDown(this.keys.five)) {
         this.fireballs.fireProjectile(this.player.x, this.player.y,
           this.player);
+      }
+
+      if (Phaser.Input.Keyboard.JustDown(this.keys.z)) {
+        
+        const healAbility = this.player.ability.heal;
+
+        if (!healAbility.isOnCooldown) {
+
+          // Healing starts immediately after the key is pressed
+          this.player.isHealing = true;
+          this.player.healAnim.x = this.player.x;
+          this.player.healAnim.y = this.player.y;
+          this.player.healAnim.setActive(true).setVisible(true);
+
+          // It takes about 0.25 of a second to heal
+          this.time.delayedCall(250, () => {
+            this.player.heal(2);
+            this.player.isHealing = false;
+            this.player.healAnim.setActive(false).setVisible(false);
+          });
+
+          // The player's heal ability is now on cooldown
+          healAbility.isOnCooldown = true;
+
+          // After cooldown is over, reactivate the ability
+          healAbility.cooldownTimer = this.time.delayedCall(
+            healAbility.cooldown, () => {
+              healAbility.isOnCooldown = false;
+          });
+        }
       }
 
       // Update the HUD with player details

@@ -74,4 +74,17 @@ export const createStatusEffectAnims = (anims) => {
     frameRate: 15,
     repeat: -1,        
   });
+
+  // Healing animation
+  anims.create({
+    key: "heal",
+    frames: anims.generateFrameNames("heal-atlas", {
+      prefix: "heal.",
+      start: 0,
+      end: 5,
+      zeroPad: 3,          
+    }),
+    frameRate: 24,
+    repeat: 0,
+  })
 }

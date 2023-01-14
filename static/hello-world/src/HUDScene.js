@@ -38,7 +38,7 @@ export default class HUDScene extends Phaser.Scene {
 
       // Player health indicator
       const healthIcon = this.add.image(30, 575, "health-icon").setScale(2);
-      const healthText = this.add.text(50, 575, "100",
+      const healthText = this.add.text(50, 575, "-",
         { font: "20px Courier", fill: "#000000" });
 
       // Root CD indicator
@@ -76,6 +76,7 @@ export default class HUDScene extends Phaser.Scene {
       const mainScene = this.scene.get("MainScene");
 
       mainScene.events.on("update-hud", (player) => {
+        healthText.setText(player.currentHealth);
         if (player.ability.plant.isOnCooldown) {
           const rootCD = player.ability.plant.cooldownTimer.getOverallRemainingSeconds();
           const formattedRootCD = Math.round(rootCD);
@@ -89,6 +90,13 @@ export default class HUDScene extends Phaser.Scene {
           iceCDText.setText(`CD: ${formattedIceCD}`);
         } else {
           iceCDText.setText(`Ready`);
+        }
+        if (player.ability.heal.isOnCooldown) {
+          const healCD = player.ability.heal.cooldownTimer.getOverallRemainingSeconds();
+          const formattedHealCD = Math.round(healCD);
+          healCDText.setText(`CD: ${formattedHealCD}`);
+        } else {
+          healCDText.setText(`Ready`);
         }
 
       });
