@@ -139,7 +139,7 @@ function Game() {
           cooldownTimer: null,
           cooldown: 6000,
         },
-        flame: {
+        fire: {
           isOnCooldown: false,
           cooldownTimer: null,
           cooldown: 8000,
@@ -225,6 +225,7 @@ function Game() {
       // Enemies are initialized with no status effects
       this.enemy.isRooted = false;
       this.enemy.isSlowed = false;
+      this.enemy.isOnFire = false;
 
       // Adds hidden status effect for enemy
       this.enemy.rootAnim = this.physics.add
@@ -234,7 +235,11 @@ function Game() {
       this.enemy.slowAnim = this.physics.add
         .sprite(this.enemy.x, this.enemy.y, "slow-atlas", "slow.000")
         .setActive(false)
-        .setVisible(false)
+        .setVisible(false);
+      this.enemy.onFireAnim = this.physics.add
+        .sprite(this.enemy.x, this.enemy.y, "flame-atlas", "flame.000")
+        .setActive(false)
+        .setVisible(false);
 
       // Adds test enemy to the group of enemies
       this.enemies = this.add.group();
@@ -339,6 +344,41 @@ function Game() {
           iceSpike.setVisible(false); 
         } 
 
+      });   
+      
+      // Fireball collision with enemies
+      this.physics.add.collider(this.fireballs, this.enemies, (obj1, obj2) => {
+
+        const fireball = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        const enemy = [obj1, obj2].find((obj) => obj !== fireball);
+
+        if (fireball.damageOnImpact > 0) {
+          enemy.takeDamage(fireball.damageOnImpact);
+          
+          // Set the enemy on fire
+          enemy.isOnFire = true;
+          enemy.onFireAnim.setActive(true).setVisible(true);
+
+          // After initial damage, 1 damage per second for 3 seconds
+          this.time.delayedCall(1000, () => {
+            enemy.takeDamage(1);
+          });
+          this.time.delayedCall(2000, () => {
+            enemy.takeDamage(1);
+          });
+          this.time.delayedCall(3000, () => {
+            enemy.takeDamage(1);
+            enemy.isOnFire = false;
+            enemy.onFireAnim.setActive(false).setVisible(false);
+          });
+          
+          // No damage after first hit
+          fireball.damageOnImpact = 0;
+
+          fireball.setActive(false);
+          fireball.setVisible(false); 
+        } 
+
       });    
 
       // Adds the ability keys
@@ -428,8 +468,13 @@ function Game() {
         this.enemy.slowAnim.y = this.enemy.y;
         this.enemy.slowAnim.anims.play("enemy-slow", true);
       }
+      if (this.enemy.isOnFire) {
+        this.enemy.onFireAnim.x = this.enemy.x;
+        this.enemy.onFireAnim.y = this.enemy.y;
+        this.enemy.onFireAnim.anims.play("enemy-on-fire", true);
+      }
 
-      // Status effects impact enemy movement
+      // Check for status effects that impact enemy movement
       if (this.enemy.isRooted) {
         this.enemy.setVelocity(0);
       } else if (this.enemy.isSlowed) {
@@ -503,8 +548,22 @@ function Game() {
       }
 
       if (Phaser.Input.Keyboard.JustDown(this.keys.five)) {
-        this.fireballs.fireProjectile(this.player.x, this.player.y,
-          this.player);
+
+        const fireAbility = this.player.ability.fire;
+
+        if (!fireAbility.isOnCooldown) {
+          this.fireballs.fireProjectile(this.player.x, this.player.y, 
+            this.player);
+
+          // The player's fire ability is now on cooldown
+          fireAbility.isOnCooldown = true;
+
+          // After cooldown is over, reactivate the ability
+          fireAbility.cooldownTimer = this.time.delayedCall(
+            fireAbility.cooldown, () => {
+              fireAbility.isOnCooldown = false;
+          });
+        }
       }
 
       if (Phaser.Input.Keyboard.JustDown(this.keys.z)) {

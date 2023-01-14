@@ -61,9 +61,9 @@ export default class HUDScene extends Phaser.Scene {
       const iceCDText = this.add.text(500, 575, "Ready",
         { font: "20px Courier", fill: "#000000" });
 
-      // Flame CD indicator
-      const flameIcon = this.add.image(600, 575, "flame-icon").setScale(2);
-      const flameCDText = this.add.text(620, 575, "Ready",
+      // Fire CD indicator
+      const fireIcon = this.add.image(600, 575, "flame-icon").setScale(2);
+      const fireCDText = this.add.text(620, 575, "Ready",
         { font: "20px Courier", fill: "#000000" });
 
       // Heal CD indicator
@@ -90,6 +90,13 @@ export default class HUDScene extends Phaser.Scene {
           iceCDText.setText(`CD: ${formattedIceCD}`);
         } else {
           iceCDText.setText(`Ready`);
+        }
+        if (player.ability.fire.isOnCooldown) {
+          const fireCD = player.ability.fire.cooldownTimer.getOverallRemainingSeconds();
+          const formattedFireCD = Math.round(fireCD);
+          fireCDText.setText(`CD: ${formattedFireCD}`);
+        } else {
+          fireCDText.setText(`Ready`);
         }
         if (player.ability.heal.isOnCooldown) {
           const healCD = player.ability.heal.cooldownTimer.getOverallRemainingSeconds();

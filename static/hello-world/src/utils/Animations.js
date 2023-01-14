@@ -75,6 +75,19 @@ export const createStatusEffectAnims = (anims) => {
     repeat: -1,        
   });
 
+  // Flame animation
+  anims.create({
+    key: "enemy-on-fire",
+    frames: anims.generateFrameNames("flame-atlas", {
+      prefix: "flame.",
+      start: 0,
+      end: 4,
+      zeroPad: 3,          
+    }),
+    frameRate: 15,
+    repeat: -1,    
+  });
+
   // Healing animation
   anims.create({
     key: "heal",
@@ -86,5 +99,5 @@ export const createStatusEffectAnims = (anims) => {
     }),
     frameRate: 24,
     repeat: 0,
-  })
+  });
 }
