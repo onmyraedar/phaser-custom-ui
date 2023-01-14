@@ -44,6 +44,12 @@ import healAtlasPng from "./assets/status-effects/heal-atlas.png";
 // HUD container
 import HUDScene from "./HUDScene";
 
+// Animations
+import { 
+  createPlayerMovementAnims, 
+  createStatusEffectAnims
+} from "./utils/Animations";
+
 function Game() {
 
   // Scene
@@ -159,81 +165,11 @@ function Game() {
         down: Input.Keyboard.KeyCodes.S,
       });
 
-      // Creates the player's movement animations
+      // Creates animations
       const anims = this.anims;
 
-      anims.create({
-        key: "player-walk-front",
-        frames: anims.generateFrameNames("player-atlas", {
-          prefix: "ninja-walk-front.",
-          start: 0,
-          end: 3,
-          zeroPad: 3,
-        }),
-        frameRate: 7,
-        repeat: -1,   // -1 repeats the animation infinitely many times
-      });
-
-      anims.create({
-        key: "player-walk-back",
-        frames: anims.generateFrameNames("player-atlas", {
-          prefix: "ninja-walk-back.",
-          start: 0,
-          end: 3,
-          zeroPad: 3,
-        }),
-        frameRate: 7,
-        repeat: -1,
-      });    
-
-      anims.create({
-        key: "player-walk-left",
-        frames: anims.generateFrameNames("player-atlas", {
-          prefix: "ninja-walk-left.",
-          start: 0,
-          end: 3,
-          zeroPad: 3,
-        }),
-        frameRate: 7,
-        repeat: -1,
-      });  
-
-      anims.create({
-        key: "player-walk-right",
-        frames: anims.generateFrameNames("player-atlas", {
-          prefix: "ninja-walk-right.",
-          start: 0,
-          end: 3,
-          zeroPad: 3,
-        }),
-        frameRate: 7,
-        repeat: -1,
-      });  
-
-      // Root animation
-      anims.create({
-        key: "enemy-root",
-        frames: anims.generateFrameNames("root-atlas", {
-          prefix: "root.",
-          start: 0,
-          end: 7,
-          zeroPad: 3,          
-        }),
-        frameRate: 15,
-        repeat: -1,
-      });
-
-      anims.create({
-        key: "enemy-slow",
-        frames: anims.generateFrameNames("slow-atlas", {
-          prefix: "slow.",
-          start: 0,
-          end: 9,
-          zeroPad: 3,          
-        }),
-        frameRate: 15,
-        repeat: -1,        
-      });
+      createPlayerMovementAnims(anims);
+      createStatusEffectAnims(anims);
 
       // Temporary test enemy
       this.enemy = this.physics.add
