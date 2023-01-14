@@ -265,7 +265,7 @@ function Game() {
       this.enemies.add(this.enemy);
 
       // Projectile groups
-      this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000", 3);
+      this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000", 2);
       this.plantSpikes = new ProjectileGroup(this, "plant-spike-atlas", "plant-spike.002", 4);
       this.rocks = new ProjectileGroup(this, "rock-atlas", "rock.000", 7);
       this.lightningBolts = new ProjectileGroup(this, "lightning-atlas", "lightning.003", 3);
