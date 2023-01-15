@@ -4,6 +4,10 @@ import buttonImg from "./assets/title/DialogueBoxSimple.png";
 
 export default class TitleScene extends Phaser.Scene {
 
+  constructor() {
+    super("TitleScene");
+  }
+
   preload() {
     this.load.image("button", buttonImg);
   }

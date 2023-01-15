@@ -38,7 +38,7 @@ export default class HUDScene extends Phaser.Scene {
 
       // Player health indicator
       const healthIcon = this.add.image(30, 575, "health-icon").setScale(2);
-      const healthText = this.add.text(50, 575, "-",
+      const healthText = this.add.text(50, 575, "100",
         { font: "20px Courier", fill: "#000000" });
 
       // Root CD indicator
@@ -74,6 +74,9 @@ export default class HUDScene extends Phaser.Scene {
 
       // Event listener for MainScene changes
       const mainScene = this.scene.get("MainScene");
+
+      // This line is needed or an error is triggered
+      mainScene.events.off("update-hud");
 
       mainScene.events.on("update-hud", (player) => {
         healthText.setText(player.currentHealth);

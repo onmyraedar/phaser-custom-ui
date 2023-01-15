@@ -44,6 +44,7 @@ import healAtlasPng from "./assets/status-effects/heal-atlas.png";
 // Other scenes
 import TitleScene from "./TitleScene";
 import HUDScene from "./HUDScene";
+import GameOverScene from "./GameOverScene";
 
 // Animations
 import { 
@@ -183,9 +184,22 @@ function Game() {
       }
 
       this.player.takeDamage = (damage) => {
-        this.player.currentHealth -= damage;
 
-        // Implement death logic below
+        if (damage < this.player.currentHealth) {
+          this.player.currentHealth -= damage;
+        } else {
+          this.player.currentHealth -= this.player.currentHealth;
+
+          // The player is dead and the game is over
+          // Fade out of this scene
+          camera.fadeOut(1000);
+
+          this.time.delayedCall(1000, () => {
+            this.scene.stop("HUDScene");
+            this.scene.start("GameOverScene");
+          });
+
+        }
 
       };
 
@@ -801,7 +815,7 @@ function Game() {
     parent: "game-container",
     width: 800,
     height: 600,
-    scene: [ TitleScene, MainScene, HUDScene ],
+    scene: [ TitleScene, MainScene, HUDScene, GameOverScene ],
     pixelArt: true,
     physics: {
       default: "arcade",
