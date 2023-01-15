@@ -13,7 +13,7 @@ import healIconImg from "./assets/hud/Medipack.png";
 export default class HUDScene extends Phaser.Scene {
 
   constructor() {
-    super({key: "HUDScene", active: true});
+    super("HUDScene");
   }
 
   preload() {

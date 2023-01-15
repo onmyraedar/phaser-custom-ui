@@ -41,7 +41,8 @@ import flameAtlasPng from "./assets/status-effects/flame-atlas.png";
 import healAtlasJson from "./assets/status-effects/heal-atlas.json";
 import healAtlasPng from "./assets/status-effects/heal-atlas.png";
 
-// HUD container
+// Other scenes
+import TitleScene from "./TitleScene";
 import HUDScene from "./HUDScene";
 
 // Animations
@@ -93,6 +94,7 @@ function Game() {
       this.load.atlas("slow-atlas", slowAtlasPng, slowAtlasJson);
       this.load.atlas("flame-atlas", flameAtlasPng, flameAtlasJson);
       this.load.atlas("heal-atlas", healAtlasPng, healAtlasJson);
+
     }
 
     create() {
@@ -799,7 +801,7 @@ function Game() {
     parent: "game-container",
     width: 800,
     height: 600,
-    scene: [ MainScene, HUDScene ],
+    scene: [ TitleScene, MainScene, HUDScene ],
     pixelArt: true,
     physics: {
       default: "arcade",
