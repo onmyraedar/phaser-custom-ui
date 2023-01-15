@@ -531,8 +531,8 @@ function Game() {
         two: Phaser.Input.Keyboard.KeyCodes.TWO,
         three: Phaser.Input.Keyboard.KeyCodes.THREE,
         four: Phaser.Input.Keyboard.KeyCodes.FOUR,
-        five: Phaser.Input.Keyboard.KeyCodes.FIVE,
-        z: Phaser.Input.Keyboard.KeyCodes.Z,
+        e: Phaser.Input.Keyboard.KeyCodes.E,
+        r: Phaser.Input.Keyboard.KeyCodes.R,
       });
 
     }
@@ -738,7 +738,7 @@ function Game() {
         }
       }
 
-      if (Phaser.Input.Keyboard.JustDown(this.keys.five)) {
+      if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
 
         const fireAbility = this.player.ability.fire;
 
@@ -757,7 +757,7 @@ function Game() {
         }
       }
 
-      if (Phaser.Input.Keyboard.JustDown(this.keys.z)) {
+      if (Phaser.Input.Keyboard.JustDown(this.keys.r)) {
         
         const healAbility = this.player.ability.heal;
 
