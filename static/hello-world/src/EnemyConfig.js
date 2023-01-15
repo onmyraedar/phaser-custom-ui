@@ -44,6 +44,51 @@ const configureRockAbility = (scene, enemy) => {
   const rockAbility = enemy.ability.rock;
   rockAbility.unlocked = true;
 
+  // Set up necessary projectile group
+  rockAbility.projectiles = new ProjectileGroup(scene, "rock-atlas", "rock.000", 7);
+
+  // Set up collider with player
+  scene.physics.add.collider(rockAbility.projectiles, scene.player, (obj1, obj2) => {
+
+    const rock = [obj1, obj2].find((obj) => obj instanceof Projectile);
+    const player = [obj1, obj2].find((obj) => obj !== rock);
+
+    if (rock.damageOnImpact > 0) {
+      player.takeDamage(rock.damageOnImpact);
+      
+      // Knock the player back
+      player.isInKnockback = true;
+      player.knockbackAnim.setActive(true).setVisible(true);
+      
+      // Compute the angle between player and enemy
+      const knockbackAngleRad = Phaser.Math.Angle.Between(scene.player.x, scene.player.y,
+        enemy.x, enemy.y);
+
+      // Subtract 180 degrees - we want the player to move away from the enemy
+      const knockbackAngleDeg = Phaser.Math.RadToDeg(knockbackAngleRad) - 180;
+      
+      // Compute the velocity of the player
+      const knockbackVelocity = scene.physics.velocityFromAngle(knockbackAngleDeg, 300);
+
+      // Set knockback velocity
+      player.knockbackVelocity.x = knockbackVelocity.x;
+      player.knockbackVelocity.y = knockbackVelocity.y;
+
+      // The knockback takes about 0.2 of a second
+      scene.time.delayedCall(200, () => {
+        player.isInKnockback = false;
+        player.knockbackAnim.setActive(false).setVisible(false);
+      });
+      
+      // No damage after first hit
+      rock.damageOnImpact = 0;
+
+      rock.setActive(false);
+      rock.setVisible(false); 
+    } 
+
+  });
+
 }
 
 const configureThunderAbility = (scene, enemy) => {

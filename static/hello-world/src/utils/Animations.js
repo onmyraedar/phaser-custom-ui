@@ -139,6 +139,11 @@ export const initializeAnimationSprites = (scene, character) => {
   character.isStunned = false;
   character.isSlowed = false;
   character.isOnFire = false;
+  
+  character.knockbackVelocity = {
+    x: 0,
+    y: 0,
+  }
 
   // Adds hidden status effect sprites
   character.rootAnim = scene.physics.add

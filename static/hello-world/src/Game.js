@@ -257,7 +257,7 @@ function Game() {
         startingY: 400,
         texture: "player-atlas",
         frame: "ninja-idle-front",
-        abilities: ["ice"],
+        abilities: ["rock"],
       }];
 
       // Add group of enemies
@@ -321,6 +321,7 @@ function Game() {
           this.physics.moveToObject(enemy, this.player, speed);
         };
         
+        // Initializes status effects and animation sprites for the enemy
         initializeAnimationSprites(this, enemy);
 
         // Parameters: scene, enemy, data about unlocked enemy abilities
@@ -426,11 +427,23 @@ function Game() {
           // Knock the enemy back
           enemy.isInKnockback = true;
           enemy.knockbackAnim.setActive(true).setVisible(true);
+          
+          // Compute the angle between enemy and player
+          const knockbackAngleRad = Phaser.Math.Angle.Between(enemy.x, enemy.y,
+            this.player.x, this.player.y);
 
-          this.physics.moveTo(enemy, enemy.x - 32, enemy.y - 32, undefined, 250);
+          // Subtract 180 degrees - we want the enemy to move away from the player
+          const knockbackAngleDeg = Phaser.Math.RadToDeg(knockbackAngleRad) - 180;
+          
+          // Compute the velocity of the enemy
+          const knockbackVelocity = this.physics.velocityFromAngle(knockbackAngleDeg, 300);
 
-          // The knockback takes about 0.25 of a second
-          this.time.delayedCall(250, () => {
+          // Set knockback velocity
+          enemy.knockbackVelocity.x = knockbackVelocity.x;
+          enemy.knockbackVelocity.y = knockbackVelocity.y;
+
+          // The knockback takes about 0.2 of a second
+          this.time.delayedCall(200, () => {
             enemy.isInKnockback = false;
             enemy.knockbackAnim.setActive(false).setVisible(false);
           });
@@ -560,34 +573,37 @@ function Game() {
 
       // Update player speed based on status effects
       if (this.player.isInKnockback) {
-        // Do nothing, movement determined by delayed call
-      } else if (this.player.isRooted || this.player.isStunned) {
-        this.player.speed.current = this.player.speed.whenRooted;
-      } else if (this.player.isSlowed) {
-        this.player.speed.current = this.player.speed.whenSlowed;
+        this.player.setVelocity(this.player.knockbackVelocity.x, this.player.knockbackVelocity.y);
       } else {
-        this.player.speed.current = this.player.speed.default;
+        
+        if (this.player.isRooted || this.player.isStunned) {
+          this.player.speed.current = this.player.speed.whenRooted;
+        } else if (this.player.isSlowed) {
+          this.player.speed.current = this.player.speed.whenSlowed;
+        } else {
+          this.player.speed.current = this.player.speed.default;
+        }
+
+        const speed = this.player.speed.current;
+
+        // Horizontal movement
+        if (this.cursors.left.isDown || this.wasd.left.isDown) {
+          this.player.body.setVelocityX(-speed);
+        } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
+          this.player.body.setVelocityX(speed);
+        }
+
+        // Vertical movement
+        if (this.cursors.up.isDown || this.wasd.up.isDown) {
+          this.player.body.setVelocityY(-speed);
+        } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
+          this.player.body.setVelocityY(speed);
+        }
+
+        // Normalize and scale the velocity
+        // This prevents the player from moving faster along a diagonal
+        this.player.body.velocity.normalize().scale(speed);
       }
-
-      const speed = this.player.speed.current;
-
-      // Horizontal movement
-      if (this.cursors.left.isDown || this.wasd.left.isDown) {
-        this.player.body.setVelocityX(-speed);
-      } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
-        this.player.body.setVelocityX(speed);
-      }
-
-      // Vertical movement
-      if (this.cursors.up.isDown || this.wasd.up.isDown) {
-        this.player.body.setVelocityY(-speed);
-      } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
-        this.player.body.setVelocityY(speed);
-      }
-
-      // Normalize and scale the velocity
-      // This prevents the player from moving faster along a diagonal
-      this.player.body.velocity.normalize().scale(speed);
 
       // Update player movement animations
       // Horizontal animations have preference over vertical animations
@@ -632,7 +648,7 @@ function Game() {
 
         // Check for status effects that impact enemy movement
         if (enemy.isInKnockback) {
-          // Do nothing, movement is determined by the collider
+          enemy.setVelocity(enemy.knockbackVelocity.x, enemy.knockbackVelocity.y);
         } else if (enemy.isRooted || enemy.isStunned) {
           enemy.setVelocity(0);
         } else if (enemy.isSlowed) {

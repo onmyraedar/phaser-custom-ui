@@ -82,8 +82,6 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
       // Compute the velocity of the projectile given its firing angle and speed
       const projectileVelocity = scene.physics.velocityFromAngle(firingAngleDeg, speed);
 
-      console.log(projectileVelocity);
-
       // Set the velocity of the projectile
       this.setVelocityX(projectileVelocity.x);
       this.setVelocityY(projectileVelocity.y);
