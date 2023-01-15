@@ -288,6 +288,10 @@ function Game() {
 
           } else {
             enemy.currentHealth -= enemy.currentHealth;
+            
+            // This check fixes an issue where rapid damage could trigger
+            // a kill on the same enemy twice
+            if (enemy.body) {
 
             // The enemy is dead
             // Disable the enemy body to stop motion and collision detection
@@ -307,6 +311,8 @@ function Game() {
 
             // Destroy the sprite
             enemy.destroy();
+
+            }
           }
   
         };
