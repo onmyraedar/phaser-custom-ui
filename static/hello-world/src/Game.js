@@ -2,11 +2,12 @@ import Phaser, { Input } from "phaser";
 import { useEffect } from "react";
 
 // Tileset images
+import doorTilesetImg from "./assets/tilesets/TilesetReliefDetail.png";
 import floorTilesetImg from "./assets/tilesets/TilesetFloor.png";
 import natureTilesetImg from "./assets/tilesets/TilesetNature.png";
 
 // Maps
-import dungeonTest1Map from "./assets/tilemaps/dungeon-test-01.json";
+import gameMap from "./assets/tilemaps/GameMap.json";
 
 // Atlases
 import ninjaAtlasJson from "./assets/atlases/ninja-atlas.json";
@@ -74,9 +75,10 @@ function Game() {
     preload() {
       
       // Loading tileset images and map
+      this.load.image("door-tileset", doorTilesetImg);
       this.load.image("floor-tileset", floorTilesetImg);
       this.load.image("nature-tileset", natureTilesetImg);
-      this.load.tilemapTiledJSON("dungeon-test-1-map", dungeonTest1Map);
+      this.load.tilemapTiledJSON("game-map", gameMap);
 
       // Loading the texture atlas for the player's sprite
       // First parameter: PNG, second parameter: JSON
@@ -101,17 +103,18 @@ function Game() {
     }
 
     create() {
-      
-      const map = this.make.tilemap({ key: "dungeon-test-1-map" });
+
+      const map = this.make.tilemap({ key: "game-map" });
 
       // First parameter: the tileset name from the map's JSON file
       // Second parameter: the key from preload()
-      const floorTileset = map.addTilesetImage("TilesetFloor", "floor-tileset");
-      const natureTileset = map.addTilesetImage("TilesetNature", "nature-tileset");
+      const doorTileset = map.addTilesetImage("Doors", "door-tileset");
+      const floorTileset = map.addTilesetImage("GameMap", "floor-tileset");
+      const natureTileset = map.addTilesetImage("ZoneWalls", "nature-tileset");
 
       // First parameter: Layer name from Tiled
       const belowLayer = map.createLayer("Below Player", floorTileset, 0, 0);
-      const worldLayer = map.createLayer("World", natureTileset, 0, 0);
+      const worldLayer = map.createLayer("Zone Walls", [doorTileset, natureTileset], 0, 0);
 
       // Needed for enemy projectile configuration
       this.worldLayer = worldLayer;
@@ -119,10 +122,13 @@ function Game() {
       // Sets collision on the tiles within a layer
       worldLayer.setCollisionByProperty({ collides: true });
 
+      const spawnPoint = map.findObject("Objects", 
+        (object) => object.name = "Spawn Point");
+
       // We haven't defined a spawn point as a Tiled object. For now, we'll 
       // set the player's spawn point using manual coordinates
       this.player = this.physics.add
-        .sprite(120, 120, "player-atlas", "ninja-idle-front")
+        .sprite(spawnPoint.x, spawnPoint.y, "player-atlas", "ninja-idle-front")
         .setPushable(false);
 
       // Add the player's last idle direction
@@ -241,14 +247,14 @@ function Game() {
 
       // Attempt to create two test enemies
       const enemiesData = [{
-        startingX: 200, 
-        startingY: 200,
+        startingX: 500, 
+        startingY: 600,
         texture: "player-atlas",
         frame: "ninja-idle-front",
         abilities: ["thunder"],
       }, {
-        startingX: 250, 
-        startingY: 200,
+        startingX: 170, 
+        startingY: 400,
         texture: "player-atlas",
         frame: "ninja-idle-front",
         abilities: ["ice"],
