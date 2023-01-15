@@ -117,7 +117,8 @@ function Game() {
       // We haven't defined a spawn point as a Tiled object. For now, we'll 
       // set the player's spawn point using manual coordinates
       this.player = this.physics.add
-        .sprite(120, 120, "player-atlas", "ninja-idle-front");
+        .sprite(120, 120, "player-atlas", "ninja-idle-front")
+        .setPushable(false);
 
       // Add the player's last idle direction
       this.player.lastIdleDirection = "front";
@@ -298,6 +299,9 @@ function Game() {
 
       // Add collider between members of the enemy group
       this.physics.add.collider(this.enemies, this.enemies);
+
+      // Add collider between player and enemies
+      this.physics.add.collider(this.enemies, this.player);
 
       // Projectile groups
       this.shurikens = new ProjectileGroup(this, "shuriken-atlas", "shuriken.000", 2);
