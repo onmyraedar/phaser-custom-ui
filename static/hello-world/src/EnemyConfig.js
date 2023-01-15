@@ -21,8 +21,8 @@ const configureFireAbility = (scene, enemy) => {
       player.takeDamage(fireball.damageOnImpact);
       
       // Set the player on fire
-      // enemy.isOnFire = true;
-      // enemy.onFireAnim.setActive(true).setVisible(true);
+      scene.player.isOnFire = true;
+      scene.player.onFireAnim.setActive(true).setVisible(true);
 
       // After initial damage, 1 damage per second for 3 seconds
       scene.time.delayedCall(1000, () => {
@@ -33,8 +33,8 @@ const configureFireAbility = (scene, enemy) => {
       });
       scene.time.delayedCall(3000, () => {
         player.takeDamage(1);
-        // enemy.isOnFire = false;
-        // enemy.onFireAnim.setActive(false).setVisible(false);
+        scene.player.isOnFire = false;
+        scene.player.onFireAnim.setActive(false).setVisible(false);
       });
       
       // No damage after first hit

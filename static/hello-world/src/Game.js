@@ -49,7 +49,9 @@ import GameOverScene from "./GameOverScene";
 // Animations
 import { 
   createPlayerMovementAnims, 
-  createStatusEffectAnims
+  createStatusEffectAnims,
+  initializeAnimationSprites,
+  playStatusEffectAnims,
 } from "./utils/Animations";
 
 // Character configuration
@@ -130,6 +132,14 @@ function Game() {
       this.player.maxHealth = 100;
       this.player.currentHealth = 100;
 
+      // Speed
+      this.player.speed = {
+        current: 100,
+        default: 100,
+        whenSlowed: 50,
+        whenRooted: 0,
+      };
+
       // Sets the player's ability cooldowns
       this.player.ability = {
         plant: {
@@ -163,6 +173,8 @@ function Game() {
           cooldown: 5000,
         },        
       };
+
+      initializeAnimationSprites(this, this.player);
 
       // Healing status effect and sprite
       this.player.isHealing = false;
@@ -296,35 +308,8 @@ function Game() {
         enemy.followPlayer = (speed) => {
           this.physics.moveToObject(enemy, this.player, speed);
         };
-  
-        // Enemies are initialized with no status effects
-        enemy.isRooted = false;
-        enemy.isInKnockback = false;
-        enemy.isStunned = false;
-        enemy.isSlowed = false;
-        enemy.isOnFire = false;
-  
-        // Adds hidden status effect for enemy
-        enemy.rootAnim = this.physics.add
-          .sprite(enemy.x, enemy.y, "root-atlas", "root.000")
-          .setActive(false)
-          .setVisible(false);
-        enemy.knockbackAnim = this.physics.add
-          .sprite(enemy.x, enemy.y, "knockback-atlas", "knockback.000")
-          .setActive(false)
-          .setVisible(false);
-        enemy.stunAnim = this.physics.add
-          .sprite(enemy.x, enemy.y, "stun-atlas", "stun.000")
-          .setActive(false)
-          .setVisible(false);
-        enemy.slowAnim = this.physics.add
-          .sprite(enemy.x, enemy.y, "slow-atlas", "slow.000")
-          .setActive(false)
-          .setVisible(false);
-        enemy.onFireAnim = this.physics.add
-          .sprite(enemy.x, enemy.y, "flame-atlas", "flame.000")
-          .setActive(false)
-          .setVisible(false);
+        
+        initializeAnimationSprites(this, enemy);
 
         // Parameters: scene, enemy, data about unlocked enemy abilities
         configureAbilities(this, enemy, enemyData.abilities);
@@ -555,12 +540,24 @@ function Game() {
 
     update() {
 
-      const speed = 100;
       const previousVelocity = this.player.body.velocity.clone();
 
       // Stop previous movement from the last frame
       // Sets velocity to zero in both the X and Y directions
       this.player.body.setVelocity(0);
+
+      // Update player speed based on status effects
+      if (this.player.isInKnockback) {
+        // Do nothing, movement determined by delayed call
+      } else if (this.player.isRooted || this.player.isStunned) {
+        this.player.speed.current = this.player.speed.whenRooted;
+      } else if (this.player.isSlowed) {
+        this.player.speed.current = this.player.speed.whenSlowed;
+      } else {
+        this.player.speed.current = this.player.speed.default;
+      }
+
+      const speed = this.player.speed.current;
 
       // Horizontal movement
       if (this.cursors.left.isDown || this.wasd.left.isDown) {
@@ -614,35 +611,12 @@ function Game() {
       }
 
       this.enemies.getChildren().forEach((enemy) => {
+
         // Updates the enemy's health indicator
         enemy.updateHealthIndicator();
 
-        // Determines which animation to play
-        if (enemy.isRooted) {
-          enemy.rootAnim.x = enemy.x;
-          enemy.rootAnim.y = enemy.y;
-          enemy.rootAnim.anims.play("enemy-root", true);
-        }
-        if (enemy.isInKnockback) {
-          enemy.knockbackAnim.x = enemy.x;
-          enemy.knockbackAnim.y = enemy.y;
-          enemy.knockbackAnim.anims.play("enemy-knockback", true);
-        }
-        if (enemy.isStunned) {
-          enemy.stunAnim.x = enemy.x;
-          enemy.stunAnim.y = enemy.y;
-          enemy.stunAnim.anims.play("enemy-stun", true);
-        }
-        if (enemy.isSlowed) {
-          enemy.slowAnim.x = enemy.x;
-          enemy.slowAnim.y = enemy.y;
-          enemy.slowAnim.anims.play("enemy-slow", true);
-        }
-        if (enemy.isOnFire) {
-          enemy.onFireAnim.x = enemy.x;
-          enemy.onFireAnim.y = enemy.y;
-          enemy.onFireAnim.anims.play("enemy-on-fire", true);
-        }
+        // Plays animations for the enemy's current status effect
+        playStatusEffectAnims(enemy);
 
         // Check for status effects that impact enemy movement
         if (enemy.isInKnockback) {
@@ -665,142 +639,150 @@ function Game() {
 
       });
 
-      // If player is healing, play the animation
+      // Plays animations for the player's current status effect
+      playStatusEffectAnims(this.player);
+
+      // If player is healing, play the healing animation
       if (this.player.isHealing) {
         this.player.healAnim.x = this.player.x;
         this.player.healAnim.y = this.player.y;
         this.player.healAnim.anims.play("heal", true);  
       }
 
-      // Pressing the space key throws a shuriken
-      if (Phaser.Input.Keyboard.JustDown(this.keys.space)) {
-        this.shurikens.fireProjectile(this.player.x, this.player.y,
-          this.player);
-      }
-      // Pressing the 1 key fires the root ability
-      if (Phaser.Input.Keyboard.JustDown(this.keys.one)) {
+      // If the player is stunned, they cannot attack
+      if (!this.player.isStunned) {
 
-        const plantAbility = this.player.ability.plant;
-
-        if (!plantAbility.isOnCooldown) {
-          this.plantSpikes.fireProjectile(this.player.x, this.player.y, 
+        // Pressing the space key throws a shuriken
+        if (Phaser.Input.Keyboard.JustDown(this.keys.space)) {
+          this.shurikens.fireProjectile(this.player.x, this.player.y,
             this.player);
-
-          // The player's plant ability is now on cooldown
-          plantAbility.isOnCooldown = true;
-
-          // After cooldown is over, reactivate the ability
-          plantAbility.cooldownTimer = this.time.delayedCall(
-            plantAbility.cooldown, () => {
-              plantAbility.isOnCooldown = false;
-          });
         }
-      }
+        // Pressing the 1 key fires the root ability
+        if (Phaser.Input.Keyboard.JustDown(this.keys.one)) {
 
-      if (Phaser.Input.Keyboard.JustDown(this.keys.two)) {
-        const rockAbility = this.player.ability.rock;
+          const plantAbility = this.player.ability.plant;
 
-        if (!rockAbility.isOnCooldown) {
-          this.rocks.fireProjectile(this.player.x, this.player.y, 
-            this.player);
+          if (!plantAbility.isOnCooldown) {
+            this.plantSpikes.fireProjectile(this.player.x, this.player.y, 
+              this.player);
 
-          // The player's rock ability is now on cooldown
-          rockAbility.isOnCooldown = true;
+            // The player's plant ability is now on cooldown
+            plantAbility.isOnCooldown = true;
 
-          // After cooldown is over, reactivate the ability
-          rockAbility.cooldownTimer = this.time.delayedCall(
-            rockAbility.cooldown, () => {
-              rockAbility.isOnCooldown = false;
-          });
+            // After cooldown is over, reactivate the ability
+            plantAbility.cooldownTimer = this.time.delayedCall(
+              plantAbility.cooldown, () => {
+                plantAbility.isOnCooldown = false;
+            });
+          }
         }
-      }
 
-      if (Phaser.Input.Keyboard.JustDown(this.keys.three)) {
+        if (Phaser.Input.Keyboard.JustDown(this.keys.two)) {
+          const rockAbility = this.player.ability.rock;
 
-        const thunderAbility = this.player.ability.thunder;
+          if (!rockAbility.isOnCooldown) {
+            this.rocks.fireProjectile(this.player.x, this.player.y, 
+              this.player);
 
-        if (!thunderAbility.isOnCooldown) {
-          this.lightningBolts.fireProjectile(this.player.x, this.player.y, 
-            this.player);
+            // The player's rock ability is now on cooldown
+            rockAbility.isOnCooldown = true;
 
-          // The player's thunder ability is now on cooldown
-          thunderAbility.isOnCooldown = true;
-
-          // After cooldown is over, reactivate the ability
-          thunderAbility.cooldownTimer = this.time.delayedCall(
-            thunderAbility.cooldown, () => {
-              thunderAbility.isOnCooldown = false;
-          });
+            // After cooldown is over, reactivate the ability
+            rockAbility.cooldownTimer = this.time.delayedCall(
+              rockAbility.cooldown, () => {
+                rockAbility.isOnCooldown = false;
+            });
+          }
         }
-      }
 
-      // Pressing the 4 key fires the ice ability
-      if (Phaser.Input.Keyboard.JustDown(this.keys.four)) {
+        if (Phaser.Input.Keyboard.JustDown(this.keys.three)) {
 
-        const iceAbility = this.player.ability.ice;
+          const thunderAbility = this.player.ability.thunder;
 
-        if (!iceAbility.isOnCooldown) {
-          this.iceSpikes.fireProjectile(this.player.x, this.player.y, 
-            this.player);
+          if (!thunderAbility.isOnCooldown) {
+            this.lightningBolts.fireProjectile(this.player.x, this.player.y, 
+              this.player);
 
-          // The player's ice ability is now on cooldown
-          iceAbility.isOnCooldown = true;
+            // The player's thunder ability is now on cooldown
+            thunderAbility.isOnCooldown = true;
 
-          // After cooldown is over, reactivate the ability
-          iceAbility.cooldownTimer = this.time.delayedCall(
-            iceAbility.cooldown, () => {
-              iceAbility.isOnCooldown = false;
-          });
+            // After cooldown is over, reactivate the ability
+            thunderAbility.cooldownTimer = this.time.delayedCall(
+              thunderAbility.cooldown, () => {
+                thunderAbility.isOnCooldown = false;
+            });
+          }
         }
-      }
 
-      if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
+        // Pressing the 4 key fires the ice ability
+        if (Phaser.Input.Keyboard.JustDown(this.keys.four)) {
 
-        const fireAbility = this.player.ability.fire;
+          const iceAbility = this.player.ability.ice;
 
-        if (!fireAbility.isOnCooldown) {
-          this.fireballs.fireProjectile(this.player.x, this.player.y, 
-            this.player);
+          if (!iceAbility.isOnCooldown) {
+            this.iceSpikes.fireProjectile(this.player.x, this.player.y, 
+              this.player);
 
-          // The player's fire ability is now on cooldown
-          fireAbility.isOnCooldown = true;
+            // The player's ice ability is now on cooldown
+            iceAbility.isOnCooldown = true;
 
-          // After cooldown is over, reactivate the ability
-          fireAbility.cooldownTimer = this.time.delayedCall(
-            fireAbility.cooldown, () => {
-              fireAbility.isOnCooldown = false;
-          });
+            // After cooldown is over, reactivate the ability
+            iceAbility.cooldownTimer = this.time.delayedCall(
+              iceAbility.cooldown, () => {
+                iceAbility.isOnCooldown = false;
+            });
+          }
         }
-      }
 
-      if (Phaser.Input.Keyboard.JustDown(this.keys.r)) {
-        
-        const healAbility = this.player.ability.heal;
+        if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
 
-        if (!healAbility.isOnCooldown) {
+          const fireAbility = this.player.ability.fire;
 
-          // Healing starts immediately after the key is pressed
-          this.player.isHealing = true;
-          this.player.healAnim.x = this.player.x;
-          this.player.healAnim.y = this.player.y;
-          this.player.healAnim.setActive(true).setVisible(true);
+          if (!fireAbility.isOnCooldown) {
+            this.fireballs.fireProjectile(this.player.x, this.player.y, 
+              this.player);
 
-          // It takes about 0.25 of a second to heal
-          this.time.delayedCall(250, () => {
-            this.player.heal(5);
-            this.player.isHealing = false;
-            this.player.healAnim.setActive(false).setVisible(false);
-          });
+            // The player's fire ability is now on cooldown
+            fireAbility.isOnCooldown = true;
 
-          // The player's heal ability is now on cooldown
-          healAbility.isOnCooldown = true;
-
-          // After cooldown is over, reactivate the ability
-          healAbility.cooldownTimer = this.time.delayedCall(
-            healAbility.cooldown, () => {
-              healAbility.isOnCooldown = false;
-          });
+            // After cooldown is over, reactivate the ability
+            fireAbility.cooldownTimer = this.time.delayedCall(
+              fireAbility.cooldown, () => {
+                fireAbility.isOnCooldown = false;
+            });
+          }
         }
+
+        if (Phaser.Input.Keyboard.JustDown(this.keys.r)) {
+          
+          const healAbility = this.player.ability.heal;
+
+          if (!healAbility.isOnCooldown) {
+
+            // Healing starts immediately after the key is pressed
+            this.player.isHealing = true;
+            this.player.healAnim.x = this.player.x;
+            this.player.healAnim.y = this.player.y;
+            this.player.healAnim.setActive(true).setVisible(true);
+
+            // It takes about 0.25 of a second to heal
+            this.time.delayedCall(250, () => {
+              this.player.heal(5);
+              this.player.isHealing = false;
+              this.player.healAnim.setActive(false).setVisible(false);
+            });
+
+            // The player's heal ability is now on cooldown
+            healAbility.isOnCooldown = true;
+
+            // After cooldown is over, reactivate the ability
+            healAbility.cooldownTimer = this.time.delayedCall(
+              healAbility.cooldown, () => {
+                healAbility.isOnCooldown = false;
+            });
+          }
+        }
+
       }
 
       // Update the HUD with player details
