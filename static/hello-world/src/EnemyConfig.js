@@ -1,6 +1,127 @@
 import Phaser from "phaser";
 import ProjectileGroup, { Projectile } from "./ProjectileGroup";
 
+const configurePlantAbility = (scene, enemy) => {
+
+  const plantAbility = enemy.ability.plant;
+  plantAbility.unlocked = true;
+
+    // Set up necessary projectile group
+    plantAbility.projectiles = new ProjectileGroup(scene, "plant-spike-atlas", "plant-spike.002", 4);
+
+    // Set up collider with player
+    scene.physics.add.collider(plantAbility.projectiles, scene.player, (obj1, obj2) => {
+  
+      const plantSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
+      const player = [obj1, obj2].find((obj) => obj !== plantSpike);
+  
+      if (plantSpike.damageOnImpact > 0) {
+        player.takeDamage(plantSpike.damageOnImpact);
+        
+        // Root the player
+        scene.player.isRooted = true;
+        scene.player.rootAnim.setActive(true).setVisible(true);
+  
+        // The root lasts for 3 seconds
+        scene.time.delayedCall(3000, () => {
+          scene.player.isRooted = false;
+          scene.player.rootAnim.setActive(false).setVisible(false);
+        });
+        
+        // No damage after first hit
+        plantSpike.damageOnImpact = 0;
+  
+        plantSpike.setActive(false);
+        plantSpike.setVisible(false); 
+      } 
+  
+    }); 
+
+}
+
+const configureRockAbility = (scene, enemy) => {
+
+  const rockAbility = enemy.ability.rock;
+  rockAbility.unlocked = true;
+
+}
+
+const configureThunderAbility = (scene, enemy) => {
+
+  const thunderAbility = enemy.ability.thunder;
+  thunderAbility.unlocked = true;
+
+    // Set up necessary projectile group
+    thunderAbility.projectiles = new ProjectileGroup(scene, "lightning-atlas", "lightning.003", 4);
+
+    // Set up collider with player
+    scene.physics.add.collider(thunderAbility.projectiles, scene.player, (obj1, obj2) => {
+  
+      const lightningBolt = [obj1, obj2].find((obj) => obj instanceof Projectile);
+      const player = [obj1, obj2].find((obj) => obj !== lightningBolt);
+  
+      if (lightningBolt.damageOnImpact > 0) {
+        player.takeDamage(lightningBolt.damageOnImpact);
+        
+        // Stun the player
+        scene.player.isStunned = true;
+        scene.player.stunAnim.setActive(true).setVisible(true);
+  
+        // The stun lasts for 2 seconds
+        scene.time.delayedCall(2000, () => {
+          scene.player.isStunned = false;
+          scene.player.stunAnim.setActive(false).setVisible(false);
+        });
+        
+        // No damage after first hit
+        lightningBolt.damageOnImpact = 0;
+  
+        lightningBolt.setActive(false);
+        lightningBolt.setVisible(false); 
+      } 
+  
+    }); 
+
+}
+
+const configureIceAbility = (scene, enemy) => {
+
+  const iceAbility = enemy.ability.ice;
+  iceAbility.unlocked = true;
+
+  // Set up necessary projectile group
+  iceAbility.projectiles = new ProjectileGroup(scene, "ice-spike-atlas", "ice-spike.007", 5);
+
+  // Set up collider with player
+  scene.physics.add.collider(iceAbility.projectiles, scene.player, (obj1, obj2) => {
+
+    const iceSpike = [obj1, obj2].find((obj) => obj instanceof Projectile);
+    const player = [obj1, obj2].find((obj) => obj !== iceSpike);
+
+    if (iceSpike.damageOnImpact > 0) {
+      player.takeDamage(iceSpike.damageOnImpact);
+      
+      // Slow the player
+      scene.player.isSlowed = true;
+      scene.player.slowAnim.setActive(true).setVisible(true);
+
+      // The slow lasts for 4 seconds
+      scene.time.delayedCall(4000, () => {
+        scene.player.isSlowed = false;
+        scene.player.slowAnim.setActive(false).setVisible(false);
+      });
+      
+      // No damage after first hit
+      iceSpike.damageOnImpact = 0;
+
+      iceSpike.setActive(false);
+      iceSpike.setVisible(false); 
+    } 
+
+  }); 
+
+}
+
 const configureFireAbility = (scene, enemy) => {
 
   const fireAbility = enemy.ability.fire;
@@ -45,6 +166,13 @@ const configureFireAbility = (scene, enemy) => {
     } 
 
   }); 
+
+}
+
+const configureHealAbility = (scene, enemy) => {
+
+  const healAbility = enemy.ability.heal;
+  healAbility.unlocked = true;
 
 }
 
@@ -108,24 +236,33 @@ export const configureAbilities = (scene, enemy, unlockedAbilities) => {
   // Allow the enemy to use the abilities in the unlocked array
   unlockedAbilities.forEach((ability) => {
     if (ability === "plant") {
-      enemy.ability.plant.unlocked = true;
+      configurePlantAbility(scene, enemy);
+      abilityProjectileGroups.push(enemy.ability.plant.projectiles);
+      enemy.unlockedAbilityList.push(enemy.ability.plant);
 
     } else if (ability === "rock") {
-      enemy.ability.rock.unlocked = true;
+      configureRockAbility(scene, enemy);
+      abilityProjectileGroups.push(enemy.ability.rock.projectiles);
+      enemy.unlockedAbilityList.push(enemy.ability.rock);
 
     } else if (ability === "thunder") {
-      enemy.ability.thunder.unlocked = true;
+      configureThunderAbility(scene, enemy);
+      abilityProjectileGroups.push(enemy.ability.thunder.projectiles);
+      enemy.unlockedAbilityList.push(enemy.ability.thunder);
 
     } else if (ability === "ice") {
-      enemy.ability.ice.unlocked = true;
+      configureIceAbility(scene, enemy);
+      abilityProjectileGroups.push(enemy.ability.ice.projectiles);
+      enemy.unlockedAbilityList.push(enemy.ability.ice);
 
     } else if (ability === "fire") {
       configureFireAbility(scene, enemy);
       abilityProjectileGroups.push(enemy.ability.fire.projectiles);
       enemy.unlockedAbilityList.push(enemy.ability.fire);
 
+    // No enemies have healing abilities for now 
     } else if (ability === "heal") {
-      enemy.ability.heal.unlocked = true;
+      configureHealAbility(scene, enemy);
     }
   });
 
@@ -150,7 +287,7 @@ export const fireIfAvailable = (scene, enemy) => {
     return !ability.isOnCooldown;
   });
 
-  // If there are any available abilities
+  // First, check if there are any available abilities
   if (availableAbilities.length > 0) {
 
     // Randomly select an available ability

@@ -245,13 +245,13 @@ function Game() {
         startingY: 200,
         texture: "player-atlas",
         frame: "ninja-idle-front",
-        abilities: ["fire"],
+        abilities: ["thunder"],
       }, {
         startingX: 250, 
         startingY: 200,
         texture: "player-atlas",
         frame: "ninja-idle-front",
-        abilities: ["fire"],
+        abilities: ["ice"],
       }];
 
       // Add group of enemies
@@ -753,36 +753,38 @@ function Game() {
           }
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.keys.r)) {
+
+      }
+
+      // The player should still be able to heal if stunned
+      if (Phaser.Input.Keyboard.JustDown(this.keys.r)) {
           
-          const healAbility = this.player.ability.heal;
+        const healAbility = this.player.ability.heal;
 
-          if (!healAbility.isOnCooldown) {
+        if (!healAbility.isOnCooldown) {
 
-            // Healing starts immediately after the key is pressed
-            this.player.isHealing = true;
-            this.player.healAnim.x = this.player.x;
-            this.player.healAnim.y = this.player.y;
-            this.player.healAnim.setActive(true).setVisible(true);
+          // Healing starts immediately after the key is pressed
+          this.player.isHealing = true;
+          this.player.healAnim.x = this.player.x;
+          this.player.healAnim.y = this.player.y;
+          this.player.healAnim.setActive(true).setVisible(true);
 
-            // It takes about 0.25 of a second to heal
-            this.time.delayedCall(250, () => {
-              this.player.heal(5);
-              this.player.isHealing = false;
-              this.player.healAnim.setActive(false).setVisible(false);
-            });
+          // It takes about 0.25 of a second to heal
+          this.time.delayedCall(250, () => {
+            this.player.heal(5);
+            this.player.isHealing = false;
+            this.player.healAnim.setActive(false).setVisible(false);
+          });
 
-            // The player's heal ability is now on cooldown
-            healAbility.isOnCooldown = true;
+          // The player's heal ability is now on cooldown
+          healAbility.isOnCooldown = true;
 
-            // After cooldown is over, reactivate the ability
-            healAbility.cooldownTimer = this.time.delayedCall(
-              healAbility.cooldown, () => {
-                healAbility.isOnCooldown = false;
-            });
-          }
+          // After cooldown is over, reactivate the ability
+          healAbility.cooldownTimer = this.time.delayedCall(
+            healAbility.cooldown, () => {
+              healAbility.isOnCooldown = false;
+          });
         }
-
       }
 
       // Update the HUD with player details
