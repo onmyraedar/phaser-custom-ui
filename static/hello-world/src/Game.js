@@ -132,32 +132,32 @@ function Game() {
         plant: {
           isOnCooldown: false,
           cooldownTimer: null,
-          cooldown: 5000,
+          cooldown: 6000,
         },
         rock: {
           isOnCooldown: false,
           cooldownTimer: null,
-          cooldown: 5000, 
+          cooldown: 6000, 
         },
         thunder: {
           isOnCooldown: false,
           cooldownTimer: null,
-          cooldown: 6000,
+          cooldown: 7000,
         },
         ice: {
           isOnCooldown: false,
           cooldownTimer: null,
-          cooldown: 6000,
+          cooldown: 7000,
         },
         fire: {
           isOnCooldown: false,
           cooldownTimer: null,
-          cooldown: 8000,
+          cooldown: 9000,
         },
         heal: {
           isOnCooldown: false,
           cooldownTimer: null,
-          cooldown: 4000,
+          cooldown: 5000,
         },        
       };
 
@@ -771,7 +771,7 @@ function Game() {
 
           // It takes about 0.25 of a second to heal
           this.time.delayedCall(250, () => {
-            this.player.heal(2);
+            this.player.heal(5);
             this.player.isHealing = false;
             this.player.healAnim.setActive(false).setVisible(false);
           });
