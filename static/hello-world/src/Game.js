@@ -259,6 +259,7 @@ function Game() {
   
         // Enemies are initialized with no status effects
         enemy.isRooted = false;
+        enemy.isInKnockback = false;
         enemy.isStunned = false;
         enemy.isSlowed = false;
         enemy.isOnFire = false;
@@ -266,6 +267,10 @@ function Game() {
         // Adds hidden status effect for enemy
         enemy.rootAnim = this.physics.add
           .sprite(enemy.x, enemy.y, "root-atlas", "root.000")
+          .setActive(false)
+          .setVisible(false);
+        enemy.knockbackAnim = this.physics.add
+          .sprite(enemy.x, enemy.y, "knockback-atlas", "knockback.000")
           .setActive(false)
           .setVisible(false);
         enemy.stunAnim = this.physics.add
@@ -363,6 +368,38 @@ function Game() {
 
           plantSpike.setActive(false);
           plantSpike.setVisible(false); 
+        } 
+
+      });
+
+      // Rock collision with enemies
+      this.physics.add.collider(this.rocks, this.enemies, (obj1, obj2) => {
+
+        const rock = [obj1, obj2].find((obj) => obj instanceof Projectile);
+        const enemy = [obj1, obj2].find((obj) => obj !== rock);
+
+        // The if clause prevents the damage, knockback, and projectile update calls 
+        // from firing twice
+        if (rock.damageOnImpact > 0) {
+          enemy.takeDamage(rock.damageOnImpact);
+          
+          // Knock the enemy back
+          enemy.isInKnockback = true;
+          enemy.knockbackAnim.setActive(true).setVisible(true);
+
+          this.physics.moveTo(enemy, enemy.x - 32, enemy.y - 32, undefined, 250);
+
+          // The knockback takes about 0.25 of a second
+          this.time.delayedCall(250, () => {
+            enemy.isInKnockback = false;
+            enemy.knockbackAnim.setActive(false).setVisible(false);
+          });
+          
+          // No damage after first hit
+          rock.damageOnImpact = 0;
+
+          rock.setActive(false);
+          rock.setVisible(false); 
         } 
 
       });
@@ -543,6 +580,11 @@ function Game() {
           enemy.rootAnim.y = enemy.y;
           enemy.rootAnim.anims.play("enemy-root", true);
         }
+        if (enemy.isInKnockback) {
+          enemy.knockbackAnim.x = enemy.x;
+          enemy.knockbackAnim.y = enemy.y;
+          enemy.knockbackAnim.anims.play("enemy-knockback", true);
+        }
         if (enemy.isStunned) {
           enemy.stunAnim.x = enemy.x;
           enemy.stunAnim.y = enemy.y;
@@ -560,7 +602,9 @@ function Game() {
         }
 
         // Check for status effects that impact enemy movement
-        if (enemy.isRooted || enemy.isStunned) {
+        if (enemy.isInKnockback) {
+          // Do nothing, movement is determined by the collider
+        } else if (enemy.isRooted || enemy.isStunned) {
           enemy.setVelocity(0);
         } else if (enemy.isSlowed) {
           enemy.followPlayer(18);
@@ -611,8 +655,21 @@ function Game() {
       }
 
       if (Phaser.Input.Keyboard.JustDown(this.keys.two)) {
-        this.rocks.fireProjectile(this.player.x, this.player.y,
-          this.player);
+        const rockAbility = this.player.ability.rock;
+
+        if (!rockAbility.isOnCooldown) {
+          this.rocks.fireProjectile(this.player.x, this.player.y, 
+            this.player);
+
+          // The player's rock ability is now on cooldown
+          rockAbility.isOnCooldown = true;
+
+          // After cooldown is over, reactivate the ability
+          rockAbility.cooldownTimer = this.time.delayedCall(
+            rockAbility.cooldown, () => {
+              rockAbility.isOnCooldown = false;
+          });
+        }
       }
 
       if (Phaser.Input.Keyboard.JustDown(this.keys.three)) {

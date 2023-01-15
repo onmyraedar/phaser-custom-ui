@@ -84,6 +84,13 @@ export default class HUDScene extends Phaser.Scene {
         } else {
           rootCDText.setText(`Ready`);
         }
+        if (player.ability.rock.isOnCooldown) {
+          const rockCD = player.ability.rock.cooldownTimer.getOverallRemainingSeconds();
+          const formattedRockCD = Math.round(rockCD);
+          rockCDText.setText(`CD: ${formattedRockCD}`);
+        } else {
+          rockCDText.setText(`Ready`);
+        }
         if (player.ability.thunder.isOnCooldown) {
           const thunderCD = player.ability.thunder.cooldownTimer.getOverallRemainingSeconds();
           const formattedThunderCD = Math.round(thunderCD);
