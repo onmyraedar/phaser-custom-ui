@@ -125,7 +125,7 @@ function Game() {
 
       // Health
       this.player.maxHealth = 100;
-      this.player.currentHealth = 80;
+      this.player.currentHealth = 100;
 
       // Sets the player's ability cooldowns
       this.player.ability = {
@@ -248,9 +248,32 @@ function Game() {
         };
         
         enemy.takeDamage = (damage) => {
-          enemy.currentHealth -= damage;
-  
-          // Implement death logic below
+
+          if (damage < enemy.currentHealth) {
+            enemy.currentHealth -= damage;
+
+          } else {
+            enemy.currentHealth -= enemy.currentHealth;
+
+            // The enemy is dead
+            // Disable the enemy body to stop motion and collision detection
+            enemy.body.enable = false;
+
+            // Destroy the sprite's health indicator
+            enemy.healthIndicator.destroy();
+
+            // Add a tween to fade the sprite out
+            const deathTween = this.tweens.add({
+              targets: enemy,
+              alpha: 0,
+              ease: "Power0",
+              duration: 500,
+              repeat: 0,
+            });
+
+            // Destroy the sprite
+            enemy.destroy();
+          }
   
         };
   
