@@ -44,6 +44,7 @@ import healAtlasPng from "./assets/status-effects/heal-atlas.png";
 
 // Other scenes
 import TitleScene from "./TitleScene";
+import AdventureSelectionScene from "./AdventureSelectionScene";
 import HUDScene from "./HUDScene";
 import GameOverScene from "./GameOverScene";
 
@@ -60,6 +61,7 @@ import {
   configureAbilities, 
   fireIfAvailable 
 } from "./EnemyConfig";
+import { parseIssueData } from "./EnemyDataCreation";
 
 function Game() {
 
@@ -70,6 +72,12 @@ function Game() {
       super("MainScene");
       this.cursors = {};
       this.wasd = {};
+    }
+
+    init(data) {
+      console.log("Main Scene init data");
+      console.log(data.issueData);
+      this.issueData = data.issueData;
     }
 
     preload() {
@@ -245,20 +253,12 @@ function Game() {
       createPlayerMovementAnims(anims);
       createStatusEffectAnims(anims);
 
+      const emptyTiles = belowLayer.filterTiles((tile) => {
+        return tile.properties.canSpawn;
+      });
+
       // Attempt to create two test enemies
-      const enemiesData = [{
-        startingX: 500, 
-        startingY: 600,
-        texture: "player-atlas",
-        frame: "ninja-idle-front",
-        abilities: ["thunder"],
-      }, {
-        startingX: 170, 
-        startingY: 400,
-        texture: "player-atlas",
-        frame: "ninja-idle-front",
-        abilities: ["rock"],
-      }];
+      const enemiesData = parseIssueData(this.issueData, emptyTiles);
 
       // Add group of enemies
       this.enemies = this.add.group();
@@ -827,7 +827,7 @@ function Game() {
     parent: "game-container",
     width: 800,
     height: 600,
-    scene: [ TitleScene, MainScene, HUDScene, GameOverScene ],
+    scene: [ TitleScene, AdventureSelectionScene, MainScene, HUDScene, GameOverScene ],
     pixelArt: true,
     physics: {
       default: "arcade",

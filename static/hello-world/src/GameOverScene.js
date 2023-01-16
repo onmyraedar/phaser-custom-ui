@@ -28,7 +28,7 @@ export default class GameOverScene extends Phaser.Scene {
         restartNeutral.setActive(true).setVisible(true);
       })
       .on("pointerdown", () => {
-        this.scene.start("MainScene").launch("HUDScene");
+        this.scene.start("TitleScene");
       })
       .setActive(false).setVisible(false);
 
