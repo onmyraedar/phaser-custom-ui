@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 
 import gameOverBackgroundImg from "./assets/game-over/GameOverBackground.png";
-import buttonImg from "./assets/title/DialogueBoxSimple.png";
+import restartHoverImg from "./assets/game-over/RestartHover.png";
+import restartNeutralImg from "./assets/game-over/RestartNeutral.png";
 
 export default class GameOverScene extends Phaser.Scene {
 
@@ -11,25 +12,33 @@ export default class GameOverScene extends Phaser.Scene {
 
   preload() {
     this.load.image("game-over-background", gameOverBackgroundImg);
-    this.load.image("button", buttonImg);
+    this.load.image("restart-hover", restartHoverImg);
+    this.load.image("restart-neutral", restartNeutralImg);
   }
 
   create() {
     const gameOverBackground = this.add.image(0, 0, "game-over-background")
       .setOrigin(0, 0);
-    const gameOverText = this.add.text(
-      300, 120, "Game Over", { font: "20px Courier", fill: "#000000" });
-    const restartButton = this.add.image(300, 300, "button")
+      
+      const restartHover = this.add.image(300, 350, "restart-hover")
+      .setOrigin(0, 0)
       .setInteractive()
+      .on("pointerout", () => {
+        restartHover.setActive(false).setVisible(false);
+        restartNeutral.setActive(true).setVisible(true);
+      })
       .on("pointerdown", () => {
-        this.scene.stop();
-        const hudScene = this.scene.get("HUDScene");
-        hudScene.scene.restart();
-        const mainScene = this.scene.get("MainScene");
-        mainScene.scene.restart();
-        });
-    const restartText = this.add.text(
-      300, 300, "Restart", { font: "20px Courier", fill: "#000000" });
+        this.scene.start("MainScene").launch("HUDScene");
+      })
+      .setActive(false).setVisible(false);
+
+    const restartNeutral = this.add.image(300, 350, "restart-neutral")
+      .setOrigin(0, 0)
+      .setInteractive()
+      .on("pointerover", () => {
+        restartNeutral.setActive(false).setVisible(false);
+        restartHover.setActive(true).setVisible(true);
+      });
   }
 
 }
